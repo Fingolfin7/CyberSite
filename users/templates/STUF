@@ -1,0 +1,12 @@
+    <div class="left-side">
+          <h2>login</h2>
+
+         {% for field in form %}
+          {{ field| as_crispy_field }}
+         {% endfor %}
+
+          <div class="flex-row">
+              <input type="submit" class="button" id="login" value="login">
+              <a class="button-link" id="signup-btn" href="{% url 'register' %}">Signup</a>
+          </div>
+    </div>

@@ -1,0 +1,10 @@
+icon list:
+report
+edit
+arrow_drop_down
+swap_vert
+remove-circle
+attach_file
+search
+add
+delete_forever

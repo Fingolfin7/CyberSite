@@ -1,0 +1,61 @@
+{% extends 'core/base.html'%}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block js_includes %}
+    <script src = "{% static 'core/js/issues.js' %}" type="text/javascript"></script>
+{% endblock %}
+
+{% block popup %}
+    <div class="popup" id="issue-popup">
+        <div class="popup-content">
+          Add Issue from:
+          <select class="select-field" name="issue-sources" id="issue-sources">
+            <option value="">Source 1</option>
+            <option value="">Source 2</option>
+            <option value="">Source 3</option>
+          </select>
+
+          <br>
+
+          <input type="text" class="input-field" id="issue-title"
+           placeholder="Issue Title">
+
+          <br>
+
+          <button type="button" class="forestgreen button no-border" id="append-issue">
+            <i class="material-icons">add</i>
+            Add Issue
+          </button>
+
+          <button type="button" class="blue-grey button no-border" id="cancel">
+            <i class="material-icons">cancel</i>
+            Cancel
+          </button>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+  <form class="card form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h3><u>Analysis</u></h3>
+
+        <button type="button" class="forestgreen button no-border" id="add-issue">
+          <i class="material-icons">add</i>
+          Add Issue
+        </button>
+
+
+        <div class="button-row">
+          <a href="{% url 'scan' %}" class="button-link">
+            <i class="material-icons md-18 no-padding">arrow_back</i>
+            Back
+          </a>
+          <button type="submit" class="button" id="next">
+            Next
+            <i class="material-icons md-18 no-padding">arrow_forward</i>
+          </button>
+        </div>
+      </form>
+{% endblock %}

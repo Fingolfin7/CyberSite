@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="css/style2.css">
+    <link rel="stylesheet" href="css/colours.css">
+    <link rel="shortcut icon" href="images/bt_small.jpg" type = "image/jpg">
+    <script src="js/jquery-3.6.0.js" type="text/javascript"></script>
+    <script src = "js/issues.js" type="text/javascript"></script>
+    <title>Bakertilly Digital Report Generator</title>
+  </head>
+  <body>
+
+    <div class="popup" id="issue-popup">
+        <div class="popup-content">
+          Add Issue from:
+          <select class="select-field" name="issue-sources" id="issue-sources">
+            <option value="">Source 1</option>
+            <option value="">Source 2</option>
+            <option value="">Source 3</option>
+          </select>
+
+          <br>
+
+          <input type="text" class="input-field" id="issue-title"
+           placeholder="Issue Title">
+
+          <br>
+
+          <button type="button" class="forestgreen button no-border" id="append-issue">
+            <i class="material-icons">add</i>
+            Add Issue
+          </button>
+
+          <button type="button" class="blue-grey button no-border" id="cancel">
+            <i class="material-icons">cancel</i>
+            Cancel
+          </button>
+        </div>
+    </div>
+
+    <div class="ribbon-container">
+      <img src="images/bt-logo-transparent.png" class="ribbon-logo">
+      <a class="plain-link" href="my-cases.html" >My Cases</a>
+    </div>
+
+    <form class="container" method="post" enctype="multipart/form-data">
+      <h2 class="left report-title">Example Report</h2>
+
+      <div class="card" id="report-info">
+        <h3><i class="material-icons">fingerprint</i>Report Information</h3>
+        <div class="even-columns">
+          <span class="col">
+            <strong>Created:</strong> Nov 12, 2021, 14:21
+            <br>
+            <strong>Report ID:</strong> a7fhue-a923dejr-hifcf23-op8217egnjlmn
+            <br>
+            <strong>Report Version:</strong> v1.5
+          </span>
+
+          <span class="col">
+            <button type="button" class="dodgerblue button no-border" id="save-changes">
+              <i class="material-icons">save</i>
+              Save All Changes
+            </button>
+          </span>
+        </div>
+      </div>
+
+      <div class="card" id="report-details">
+        <h3> <i class="material-icons">description</i>Report Details</h3>
+
+        <div class="even-columns">
+          <div class="col">
+            <textarea name="scope" rows="5" class="t-area"
+             placeholder="Scope"></textarea>
+          </div>
+
+          <div class="col">
+            <textarea name="name" rows="2" class="t-area"
+            placeholder="Report Summary Comment"></textarea>
+            <br>
+            <div class="even-columns" id="sub-details">
+              <span class="sub-details">
+                <label for="start-date">Start Date</label>
+                <input type="date" name="start-date" class="input-field">
+              </span>
+
+              <span class="sub-details">
+                <label for="end-date">End Date</label>
+                <input type="date" name="end-date" class="input-field">
+              </span>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="card" id="issues">
+        <h3><i class="material-icons">bug_report</i>Issues</h3>
+
+        <button type="button" class="forestgreen button no-border" id="add-issue">
+          <i class="material-icons">add</i>
+          Add Issue
+        </button>
+      </div>
+
+      <div class="card" id="statistics">
+        <h3><i class="material-icons">insert_chart</i>Statistics</h3>
+      </div>
+
+      <div class="card" id="changelog">
+        <h3><i class="material-icons">track_changes</i>Changelog</h3>
+
+        <div class="inner-card">
+          <table>
+            <tbody>
+              <tr>
+                <th>Date<i class="material-icons">arrow_downward</i></th>
+                <th>Description</th>
+                <th><i class="material-icons">settings</i></th>
+              </tr>
+
+              <tr>
+                <td>Nov 23, 2021, 03:37:45</td>
+                <td>Created Changelog Example</td>
+                <td><i class="material-icons">more_vert</i></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <div class="card" id="download">
+        <h3><i class="material-icons">download</i>Download</h3>
+        <a class="button-link no-border forestgreen" href="#">
+          <i class="material-icons">download</i>
+          Download Report
+        </a>
+      </div>
+
+    </form>
+
+  </body>
+</html>

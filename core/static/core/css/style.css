@@ -1,0 +1,153 @@
+*{
+  box-sizing: border-box;
+  line-height: 2;
+}
+
+html, body{
+    height: 100%;
+}
+
+body{
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+  font-family: "Open Sans", serif;
+  background: url("../images/cloud-computing.webp") center center no-repeat;
+  background-size: cover;
+  background-color: whitesmoke;
+}
+
+.container, .container--center-middle{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.container--center-middle{
+  height: 100%;
+  align-items: center;
+}
+
+.card{
+  /*width: 90%;*/
+  background-color: white;
+  box-shadow: 0 4px 8px 0 rgba(34, 139, 34, 0.35);
+  border-radius: 5px;
+  display: flex;
+  justify-content: flex-start;
+  padding: 1rem;
+}
+
+.left-side{
+  padding: 2rem;
+  margin-right: 2.5rem;
+}
+
+.input-field, .select-field{
+  display: flex;
+  height: 2rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.2rem;
+  border-width: thin;
+  border-radius: 0.25rem;
+  font-family: inherit;
+}
+
+.select-field{
+  width: 100%;
+  box-sizing: border-box;
+  background-color: transparent;
+  /*padding: 0.5rem 1rem 0.5rem 0rem;*/
+}
+
+select:invalid{
+  color: #999;
+}
+
+.flex-row{
+  display: flex;
+  justify-content: space-between;
+}
+
+.right-side-img{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#bt-logo{
+  width: 90%;
+  /*height: auto;*/
+  object-fit: contain;
+}
+
+/*buttons*/
+
+.button, .button-link{
+  background-color: transparent;
+  border-width: thin;
+  border-radius: 0;
+  border-style: none;
+  border-top-style: solid;
+  border-color: forestgreen;
+  text-align: center;
+  padding:0 1rem 0 1rem;
+  font-family: inherit;
+  font-size: 0.8rem;
+}
+
+.button-link{
+  text-decoration: none;
+  color: black;
+}
+
+.button:hover{
+  cursor: pointer;
+}
+
+
+@media (max-width: 480px){
+  .card{
+    width: 90%;
+    height: auto;
+  }
+  .left-side{
+    width: 40%;
+    padding: inherit;
+    margin-right: 2.5rem;
+  }
+
+  .right-side-img{
+    justify-content: flex-end;
+  }
+
+  #bt-logo{
+    width: 70%;
+    object-fit: fill;
+    transform: rotate(90deg);
+  }
+
+  #signup-btn{
+    margin-right: 1rem;
+  }
+
+}
+
+@media (min-width: 480px) and (max-width: 768px) {
+  .card{
+    width: 90%;
+    height: auto;
+  }
+  .left-side{
+    padding: 0.25rem;
+    margin-right: 2.5rem;
+  }
+
+  #bt-logo{
+    width: 100%;
+    object-fit: fill;
+  }
+
+ }

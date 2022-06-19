@@ -1,0 +1,18 @@
+{% extends 'users/base.html'%}
+{% load crispy_forms_tags %}
+{% block content %}
+   <div class="left-side">
+        <h2>Signup</h2>
+
+       {% for field in form %}
+        {{ field| as_crispy_field }}
+       {% endfor %}
+
+        <div class="flex-row">
+            <input type="submit" class="button" id="signup" value="Signup">
+            <a class="button-link" id="signup-btn" href="{% url 'login' %}">Go to Login</a>
+
+        </div>
+
+   </div>
+{% endblock %}

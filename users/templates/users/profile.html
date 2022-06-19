@@ -1,0 +1,44 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <form class="card form"  method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="flex-row" style="width: 25%;">
+            <img class="account-img" src="{{ user.profile.image.url }}">
+            <h1 class="left">{{ user.username }}</h1>
+        </div>
+
+        <table class="no-borders">
+            <tr>
+                <td style="border: none"> <strong> Email </strong> </td>
+                <td style="border: none"> {{ user.email }} </td>
+            </tr>
+            <tr>
+                <td style="border: none"> <strong> Level </strong> </td>
+                <td style="border: none"> {{ user.profile.level }} </td>
+            </tr>
+            <tr>
+                <td style="border: none"> <strong> Department </strong> </td>
+                <td style="border: none"> {{ user.profile.department }} </td>
+            </tr>
+        </table>
+
+        {% if profile_form %}
+            <h2>Update Profile</h2>
+            <div style="width: 65%;">
+                {% for field in profile_form %}
+                    <span>
+                        {{ field| as_crispy_field }}
+                    </span>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="flex-row">
+            <input type="submit" class="button" value="Update">
+        </div>
+
+
+    </form>
+
+{% endblock content %}

@@ -1,0 +1,79 @@
+<div class="inner-card" id="inner-card">
+  <div class="flex-row">
+    <span class="left">
+      <button class="button no-border" id="remove-issue"
+      onclick="remove_issue($(this))">
+        <i class="material-icons">remove_circle</i>
+      </button>
+      ${title}
+      <button class="button no-border" type="button" id="edit-issue">
+        <i class="material-icons">edit</i>
+      </button>
+    </span>
+
+    <span class="right">
+      <button class="button no-border" type="button" id="edit-issue-dropdown"
+      onclick="edit_dropdown($(this))">
+        <i class="material-icons">keyboard_arrow_down</i>
+      </button>
+    </span>
+  </div>
+
+  <div class="pad-top pd08" id="dropdown-content" style="display: none;">
+    <div class="even-columns pad-bottom">
+        <span>
+          <textarea name="proof" id="proof" rows="5" class="t-area"
+           placeholder="Proof of Concept"></textarea>
+        </span>
+        <span>
+          <div class="pad-bottom width-90">
+            <select class="select-field bottom-border" id="severity">
+              <option class="grey-text" value="" disabled selected>Severity</option>
+              <option value="Critical">Critical</option>
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+              <option value="Info">Info</option>
+            </select>
+          </div>
+          <div class="width-90">
+            <input placeholder="Find Date"
+            class="input-field width-100 bottom-border" type="text"
+            onfocus="(this.type='date')"
+            onblur="(this.type='text')" id="find-date" />
+          </div>
+        </span>
+    </div>
+
+    <div class="even-columns pad-bottom">
+        <span>
+          <textarea name="desc" id="desc" rows="3" class="t-area text-scroll"
+           placeholder="Description"></textarea>
+        </span>
+        <span>
+          <div class="pad-bottom pad-right pd1 width-90">
+            <textarea name="reference" id="reference" rows="1"
+            class="t-area" style="width: 100%;"
+            placeholder="Reference"></textarea>
+          </div>
+          <div>
+            <input class="input-field" type="number" placeholder="CVSS"
+            min="0" step="1" id="cvss-rating" />
+          </div>
+        </span>
+    </div>
+
+    <div class="pad-bottom flex-columns width-90" id="image_preview"></div>
+
+    <div class="pad-bottom">
+      <div>
+        <label for="screenshots">
+          <i class="material-icons round-upload">attach_file</i>
+          <input type="file" name="screenshots" onchange="preview($(this))"
+          id="screenshots" accept="image/*" multiple>
+        </label>
+      </div>
+    </div>
+
+  </div>
+</div>

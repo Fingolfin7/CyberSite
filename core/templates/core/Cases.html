@@ -1,0 +1,80 @@
+{% extends 'core/base.html'%}
+{% load crispy_forms_tags %}
+{% block content %}
+   <div class="card">
+
+        <div class="flex-row">
+            <h2>Cases</h2>
+            <a class="button-link" id="new-case" href="{% url 'new_case' %}">New Case</a>
+        </div>
+
+        <div class="inner-card">
+            <table>
+                <tbody>
+                    <tr>
+                        <th>
+                      <button class="button no-border">
+                        <i class="material-icons">folder</i>
+                      </button>
+                    </th>
+                        <th>Title</th>
+                        <th>Create Date</th>
+                        <th>
+                            Last Update
+                            <button class="button no-border">
+                                <i class="material-icons">arrow_upward</i>
+                            </button>
+                        </th>
+                        <th>
+                            <button class="button no-border">
+                                <i class="material-icons">settings</i>
+                            </button>
+                        </th>
+                    </tr>
+                    {% if cases %}
+                        {% for case in cases%}
+                            <tr>
+                                <td>
+                                    <button class="button no-border">
+                                        <i class="material-icons">check_box_outline_blank</i>
+                                    </button>
+                                </td>
+                                <td>
+                                    <a class="plain-link" href="{% url 'new_case' %}{{case.id}}">
+                                        {{ case.caseName }}
+                                    </a>
+                                </td>
+                                <td>{{ case.createDate|date:"F d, H:i" }}</td>
+                                <td>{{ case.lastUpdate|date:"F d, H:i" }}</td>
+                                <td>
+                                    <button class="button no-border">
+                                        <i class="material-icons">more_vert</i>
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td>
+                                <button class="button no-border">
+                                    <i class="material-icons">check_box_outline_blank</i>
+                                </button>
+                            </td>
+                            <td>
+                                <a class="plain-link" href="#">Example Case</a>
+                            </td>
+                            <td>Nov 12, 2021</td>
+                            <td>Nov 19, 2021</td>
+                            <td>
+                                <button class="button no-border">
+                                    <i class="material-icons">more_vert</i>
+                                </button>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+   </div>
+{% endblock %}
