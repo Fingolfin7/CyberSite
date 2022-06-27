@@ -20,6 +20,15 @@ recon_tools = [
     ("Other", "Other"),
 ]
 
+severity_levels = [
+    ("", "Severity"),
+    ("Critical", "Critical"),
+    ("High", "High"),
+    ("Medium", "Medium"),
+    ("Low", "Low"),
+    ("Info", "Info"),
+ ]
+
 
 class Cases(models.Model):
     caseName = models.CharField(max_length=100)
@@ -50,7 +59,6 @@ class Cases(models.Model):
 
 class Recon(models.Model):
     case = models.OneToOneField(Cases, on_delete=models.CASCADE)
-    # tools_list = models.CharField(choices=recon_tools, blank=False, default='Unspecified')
     tools = models.TextField()
     passive_sources = models.TextField()
 
@@ -59,3 +67,34 @@ class Recon(models.Model):
 
     class Meta:
         verbose_name_plural = "Recon"
+
+
+class Issues(models.Model):
+    case = models.ForeignKey(Cases, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    proof = models.TextField()
+    severity = models.CharField(max_length=100, choices=severity_levels)
+    find_date = models.DateField()
+    description = models.TextField()
+    reference = models.TextField()
+    cvss_rating = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.case.caseName} Issues"
+
+    def get_case_name(self):
+        return self.case.caseName
+
+    class Meta:
+        verbose_name_plural = "Issues"
+
+
+class Screenshots(models.Model):
+    issue = models.ForeignKey(Issues, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to=f'Cases/Screenshots')
+
+    def __str__(self):
+        return f"{self.issue.name} Screenshots"
+
+    class Meta:
+        verbose_name_plural = "Screenshots"

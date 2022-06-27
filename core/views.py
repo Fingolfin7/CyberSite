@@ -8,6 +8,8 @@ from django.contrib import messages
 
 @login_required
 def cases(request):
+    if 'caseID' in request.session:
+        del request.session['caseID']
     context = {
         "title": "Cases",
         "cases": Cases.objects.order_by('-lastUpdate')
@@ -32,6 +34,9 @@ def new_case(request, caseID=None):
         if caseID:
             thisCase = Cases.objects.get(id=caseID)
             case = CaseForm(instance=thisCase)
+        elif not caseID and 'caseID' in request.session:
+            thisCase = Cases.objects.get(id=request.session['caseID'])
+            case = CaseForm(instance=thisCase)
         else:
             case = CaseForm()
 
@@ -47,9 +52,7 @@ def recon(request):
     caseID = request.session['caseID']
 
     if request.method == "POST":
-        # print(request.POST.get('json_tools', ''))
         reconInstance = Cases.objects.get(id=caseID).recon
-        # tools_dict = json.loads(reconInstance.tools)
         recon_form = ReconForm(request.POST, instance=reconInstance)
 
         if recon_form.is_valid():
@@ -57,7 +60,6 @@ def recon(request):
             return redirect('scan')
         else:
             for field in ['tools', 'passive_sources']:
-                # for error in .as_data():
                 if field in recon_form.errors:
                     error = repr(recon_form.errors[field]).split('\'')[1]
                     messages.error(request, f"{field}: {error}")

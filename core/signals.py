@@ -1,4 +1,4 @@
-from .models import Cases, Recon
+from .models import Cases, Recon, Issues, Screenshots
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 
