@@ -38,7 +38,7 @@ class Cases(models.Model):
     assessmentType = models.CharField(max_length=100, choices=assessments,
                                       blank=False, default='Unspecified')
     scope = models.TextField()
-    logo = models.ImageField(upload_to=f'Cases/Logos')
+    logo = models.ImageField(upload_to=f'Cases/{caseName}/Logos')
     createDate = models.DateTimeField(auto_now_add=True)
     lastUpdate = models.DateTimeField(auto_now=True)
 
@@ -72,29 +72,16 @@ class Recon(models.Model):
 class Issues(models.Model):
     case = models.ForeignKey(Cases, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
-    proof = models.TextField()
+    summary = models.TextField(blank=True)
     severity = models.CharField(max_length=100, choices=severity_levels)
-    find_date = models.DateField()
-    description = models.TextField()
-    reference = models.TextField()
-    cvss_rating = models.IntegerField()
+    description = models.TextField(blank=True)
+    reference = models.TextField(blank=True)
+    cvss_rating = models.IntegerField(blank=True, null=True)
+    proof_screenshot = models.ImageField(blank=True, upload_to=f'Cases/Screenshots')
 
     def __str__(self):
-        return f"{self.case.caseName} Issues"
-
-    def get_case_name(self):
-        return self.case.caseName
+        return f"{self.case.caseName} Issue ({self.id})"
 
     class Meta:
         verbose_name_plural = "Issues"
 
-
-class Screenshots(models.Model):
-    issue = models.ForeignKey(Issues, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to=f'Cases/Screenshots')
-
-    def __str__(self):
-        return f"{self.issue.name} Screenshots"
-
-    class Meta:
-        verbose_name_plural = "Screenshots"

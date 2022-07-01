@@ -80,7 +80,7 @@ $(document).ready(function(){
               </div>
               <div>
                 <input class="input-field" type="number" placeholder="CVSS"
-                min="0" step="1" id="cvss-rating" />
+                min="0"  max="10" step="1" id="cvss-rating" />
               </div>
             </span>
         </div>

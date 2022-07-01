@@ -1,5 +1,6 @@
 from django import forms
-from .models import Cases, Recon
+from django.forms import formset_factory, modelformset_factory, inlineformset_factory
+from .models import Cases, Recon, Issues
 
 
 class CaseForm(forms.ModelForm):
@@ -41,3 +42,24 @@ class ReconForm(forms.ModelForm):
         labels = {
             'passive_sources': 'Data Sources',
         }
+
+
+class IssueForm(forms.ModelForm):
+    class Meta:
+        model = Issues
+        fields = ['name', 'summary', 'severity', 'description', 'reference', 'cvss_rating', 'proof_screenshot']
+
+        widgets = {'name': forms.TextInput(attrs={'class': 'input-field', 'style':'border:none;', 'placeholder': "Name"}),
+                   'summary': forms.Textarea(attrs={'class': 't-area', 'rows': '5', 'placeholder': 'Summary'}),
+                   'severity': forms.Select(attrs={'class': 'select-field'}),
+                   'description': forms.Textarea(attrs={'class': 't-area', 'rows': '3', 'placeholder': 'Description'}),
+                   'reference': forms.Textarea(attrs={'class': 't-area', 'rows': '1', 'placeholder': 'Reference'}),
+                   'cvss_rating': forms.NumberInput(attrs={'class': 'input-field', 'min': 0, 'max': 10, 'step': 1,
+                                                           'placeholder': "CVSS"}),
+                   'proof_screenshot': forms.FileInput(attrs={'accept': 'image/*', 'onchange': "preview($(this))"})
+                   }
+
+        labels = {k: "" for k in fields}
+
+
+IssueFormSet = inlineformset_factory(Cases, Issues, form=IssueForm, extra=1, can_delete=True)

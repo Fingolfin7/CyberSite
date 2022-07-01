@@ -119,7 +119,7 @@ body{
 }
 
 .even-columns{
-  display: flex;
+  /* display: flex; */
   flex-direction: row;
   flex-wrap: wrap;
 }
@@ -286,35 +286,6 @@ th > .material-icons{
 
 button > .material-icons {
   padding: 0rem 0.2rem 0.2rem 0rem;
-}
-
-
-/* tables */
-
-table{
-  width: 100%;
-  align-items: center;
-  border-collapse: collapse;
-  margin-bottom: 1rem;
-}
-
-th, td{
-  border-bottom: 1px solid #999;
-  padding: 0.25rem;
-}
-
-td.full-borders{
-  border: thin solid #999;
-}
-
-th.full-borders{
-  border: thin solid forestgreen;
-}
-
-th{
-  background-color: rgba(71, 135, 120, 0.2);
-  border-color: forestgreen;
-  text-align: left;
 }
 
 /*popups*/

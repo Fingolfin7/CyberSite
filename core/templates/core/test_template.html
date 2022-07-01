@@ -1,0 +1,169 @@
+{% extends 'core/base.html'%}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block js_includes %}
+    <script type="text/javascript">
+      $(document).ready(()=>{
+        let inner_card = $('.inner-card');
+        inner_card = inner_card[inner_card.length - 1];
+        let container = $("#issues-div");
+        let addButton = $("#add-issue");
+        let totalForms = $("#id_form-TOTAL_FORMS");
+        let formNum = $('.inner-card').length - 1;
+
+        addButton.click((e)=>{
+          e.preventDefault();
+          let newForm = inner_card.cloneNode(true); //clone the issue form
+          let formRegex = RegExp(`form-(\\d){1}-`,'g'); //Regex to find all instances of the form number
+          formNum++; //Increment the form number
+          
+          newForm = 
+          "<div class='inner-card'>" + 
+          newForm.innerHTML.replace(formRegex, `form-${formNum}-`) +
+          "</div>";//Update the new form to have the correct form number
+          
+          container.append(newForm);
+          totalForms.attr('value', `${formNum+1}`);
+        });
+
+       });
+
+        function edit_dropdown(issue){
+          dropdown_icon = issue.children("i").text();
+
+          if(dropdown_icon == "keyboard_arrow_down"){
+            issue.children("i").text("keyboard_arrow_up");
+          }
+          else{
+            issue.children("i").text("keyboard_arrow_down");
+          }
+
+          var thisIssue = issue.closest(".inner-card");
+          var issueDropdown = thisIssue.children(".dropdown-content");
+          issueDropdown.toggle("slow");
+
+        }
+        function preview(input){
+          var inputID = input.attr("id");
+          var img_preview = input.closest(".dropdown-content").children(`#preview-${inputID}`);
+          console.log(img_preview);
+          img_preview.empty();
+
+          if($(input)[0].files){
+            for(var i = 0; i < $(input)[0].files.length; i++){
+              var img_src = URL.createObjectURL($(input)[0].files[i]);
+              URL.revokeObjectURL($(input)[0].files[i]); // free up memory
+              var img_name = $(input)[0].files[i].name;
+
+              img_preview.append(`<img src="${img_src}" alt="${img_name}"
+              style="max-height: 100px;
+              border: 2px solid lightgrey;
+              margin-right: 2%;"/>`);
+            }
+
+          }
+          else{
+            console.log(`Nope! ${$(input)[0].files}`);
+          }
+        }
+    </script>
+{% endblock %} 
+
+{% block content %}
+  <form class="card form"  method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h3><u>Testing</u></h3>
+        <div id="issues-div">
+          {{ formset.management_form }}
+          {% for form in formset %}
+              <div class="inner-card">
+                  {% for hidden in form.hidden_fields %} <!--to fix the issue with the 'id' field is required-->
+                    {{ hidden }}
+                  {% endfor %}
+
+                  {% if not form.errors %}
+                  <div class="flex-row">
+                  {% else %}
+                  <div class="flex-row dark-red">
+                  {% endif %}
+                      <span class="left">
+                        {{ form.DELETE }}
+                        {{ form.name }}
+                        {{ form.name.errors }}
+                        {{ form.non_field_errors }}
+                      </span>
+                      <span class="right">
+                        <button class="button no-border" type="button" id="edit-issue-dropdown"
+                        onclick="edit_dropdown($(this))">
+                          <i class="material-icons">keyboard_arrow_down</i>
+                        </button>
+                      </span>
+                  </div>
+                  <div class="pad-top pd08 dropdown-content" style="display: none;">
+                      <div class="even-columns pad-bottom">
+                          <span>
+                              {{ form.summary }}
+                              {{ form.summary.errors }}
+                          </span>
+                          <span>
+                            <div class="pad-bottom width-90">
+                                {{ form.severity }}
+                                {{ form.severity.errors }}
+                            </div>
+                          </span>
+                      </div>
+
+                      <div class="even-columns pad-bottom">
+                          <span>
+                              {{ form.description }}
+                              {{ form.description.errors }}
+                          </span>
+                          <span>
+                            <div class="pad-bottom pad-right pd1 width-90">
+                                {{ form.reference }}
+                                {{ form.reference.errors }}
+                            </div>
+                            <div>
+                                {{ form.cvss_rating }}
+                                {{ form.cvss_rating.errors }}
+                            </div>
+                          </span>
+                      </div>
+
+                      <div class="pad-bottom flex-columns width-90" id="preview-{{ form.proof_screenshot.id_for_label }}">
+                          {% if form.instance.proof_screenshot %}
+                              <img src="{{form.instance.proof_screenshot.url}}"
+                              style="max-height: 100px;
+                              border: 2px solid lightgrey;
+                              margin-right: 2%;"/>
+                          {% endif %}
+                      </div>
+
+                      <div class="top-border">
+                        <label class="pad-top" for="{{ form.proof_screenshot.id_for_label }}">
+                            <i class="material-icons round-upload">attach_file</i>
+                            {{ form.proof_screenshot }}
+                        </label>
+                      </div>
+                  </div>
+              </div>
+          {% endfor %}
+        </div>
+
+        <button type="button" class="forestgreen button no-border" id="add-issue">
+          <i class="material-icons">add</i>
+          Add Issue
+        </button>
+        <div class="button-row">
+          <a href="#" class="button-link">
+            <i class="material-icons md-18 no-padding">arrow_back</i>
+            Back
+          </a>
+          <button type="submit" class="button" id="next">
+            Next
+            <i class="material-icons md-18 no-padding">arrow_forward</i>
+          </button>
+        </div>
+  </form>
+{% endblock %}

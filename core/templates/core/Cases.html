@@ -1,5 +1,11 @@
 {% extends 'core/base.html'%}
 {% load crispy_forms_tags %}
+{% load static %}
+
+{% block js_includes %}
+    <link rel="stylesheet" href="{% static 'core/css/tables.css' %}">
+{% endblock %}
+
 {% block content %}
    <div class="card">
 

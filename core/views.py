@@ -1,9 +1,10 @@
 import json
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.decorators import login_required
-from .models import Cases, Recon
-from .forms import CaseForm, ReconForm
+from .models import Cases, Issues, Recon
+from .forms import CaseForm, ReconForm, IssueFormSet
 from django.contrib import messages
+
 
 
 @login_required
@@ -101,6 +102,26 @@ def analysis(request):
         return redirect('')
 
     context = {
-        "title": "Analysis"
+        "title": "Analysis",
     }
     return render(request, 'core/Analysis.html', context)
+
+
+@login_required
+def test_page(request):
+    case = Cases.objects.get(id=request.session['caseID'])
+    orderIssues = case.issues_set.order_by("-id")
+    if request.method == "POST":
+        formset = IssueFormSet(request.POST, request.FILES, instance=case, queryset=orderIssues)
+        if formset.is_valid():
+            formset.save()
+            return redirect('test_page')
+    else:
+        # messages.error(request, f"{formset.errors}{formset.non_form_errors()}")
+        formset = IssueFormSet(instance=case, queryset=orderIssues)
+
+    context = {
+        "title": "Test",
+        "formset": formset
+    }
+    return render(request, 'core/test_template.html', context)

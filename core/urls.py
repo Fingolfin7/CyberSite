@@ -8,4 +8,5 @@ urlpatterns = [
     path('recon', views.recon, name='recon'),
     path('scan', views.scan, name='scan'),
     path('analysis', views.analysis, name='analysis'),
+    path('test_page', views.test_page, name='test_page'),
 ]
