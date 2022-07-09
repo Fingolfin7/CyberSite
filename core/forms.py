@@ -47,15 +47,24 @@ class ReconForm(forms.ModelForm):
 class IssueForm(forms.ModelForm):
     class Meta:
         model = Issues
-        fields = ['name', 'summary', 'severity', 'description', 'reference', 'cvss_rating', 'proof_screenshot']
+        fields = ['name', 'severity', 'affected_hosts', 'description', 'impact',
+                  'solution', 'reference', 'cvss_rating', 'proof_screenshot']
 
-        widgets = {'name': forms.TextInput(attrs={'class': 'input-field', 'style':'border:none;', 'placeholder': "Name"}),
-                   'summary': forms.Textarea(attrs={'class': 't-area', 'rows': '5', 'placeholder': 'Summary'}),
-                   'severity': forms.Select(attrs={'class': 'select-field'}),
-                   'description': forms.Textarea(attrs={'class': 't-area', 'rows': '3', 'placeholder': 'Description'}),
-                   'reference': forms.Textarea(attrs={'class': 't-area', 'rows': '1', 'placeholder': 'Reference'}),
-                   'cvss_rating': forms.NumberInput(attrs={'class': 'input-field', 'min': 0, 'max': 10, 'step': 1,
-                                                           'placeholder': "CVSS"}),
+        widgets = {'name': forms.TextInput(attrs={'class': 'input-field issueName width-90', 'style': 'border:none;',
+                                                  'placeholder': "Name"}),
+                   'severity': forms.Select(attrs={'class': 'select-field issueSeverity'}),
+                   'affected_hosts': forms.Textarea(attrs={'class': 't-area issueHosts', 'rows': '1',
+                                                           'placeholder': 'Affected Hosts'}),
+                   'description': forms.Textarea(attrs={'class': 't-area issueDescription', 'rows': '3',
+                                                        'placeholder': 'Description'}),
+                   'impact': forms.Textarea(attrs={'class': 't-area issueSummary', 'rows': '3',
+                                                   'placeholder': 'Impact'}),
+                   'solution': forms.Textarea(attrs={'class': 't-area issueSolution', 'rows': '3',
+                                                     'placeholder': 'Solution'}),
+                   'reference': forms.Textarea(attrs={'class': 't-area issueReference', 'rows': '1',
+                                                      'placeholder': 'Reference'}),
+                   'cvss_rating': forms.NumberInput(attrs={'class': 'input-field issueRating', 'min': 0, 'max': 10,
+                                                           'step': 1, 'placeholder': "CVSS"}),
                    'proof_screenshot': forms.FileInput(attrs={'accept': 'image/*', 'onchange': "preview($(this))"})
                    }
 

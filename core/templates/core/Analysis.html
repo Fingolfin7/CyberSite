@@ -4,24 +4,28 @@
 
 {% block js_includes %}
     <script src = "{% static 'core/js/issues.js' %}" type="text/javascript"></script>
+    <script src= "https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> <!-- for jquery ui and autocomplete-->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"> </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js" type="text/javascript"></script>
+    <script src = "{% static 'core/js/search.js' %}" type="text/javascript"></script>
+    <link rel="stylesheet" href="{% static 'core/css/autocomplete.css' %}">
 {% endblock %}
 
 {% block popup %}
     <div class="popup" id="issue-popup">
         <div class="popup-content">
-          Add Issue from:
+          <!--Add Issue from:
           <select class="select-field" name="issue-sources" id="issue-sources">
             <option value="">Source 1</option>
             <option value="">Source 2</option>
             <option value="">Source 3</option>
           </select>
 
-          <br>
+          <br>-->
 
-          <input type="text" class="input-field" id="issue-title"
+          <input type="text" class="input-field" data-ajax_url="{% url 'search_vulns' %}" id="issue-title"
            placeholder="Issue Title">
-
-          <br>
+            <div id="autocomplete-cont"></div>
 
           <button type="button" class="forestgreen button no-border" id="append-issue">
             <i class="material-icons">add</i>
@@ -37,25 +41,120 @@
 {% endblock %}
 
 {% block content %}
-  <form class="card form" method="post" enctype="multipart/form-data">
+  <form class="card form"  method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <h3><u>Analysis</u></h3>
+        <div class="flex-row">
+            <span class="left"><h3><u>Analysis</u></h3></span>
+            <span class="right">
+                <h4>
+                    <button type="submit" value='1' class="dodgerblue button no-border" name="save">
+                      <i class="material-icons">save</i>
+                      Save
+                    </button>
+                </h4>
+            </span>
+        </div>
+        <div id="issues-div">
+          {{ formset.management_form }}
+          {% for form in formset %}
+              <div class="inner-card">
+                  {% for hidden in form.hidden_fields %} <!--to fix the issue with the 'id' field is required-->
+                    {{ hidden }}
+                  {% endfor %}
+
+                  {% if not form.errors %}
+                  <div class="flex-row">
+                  {% else %}
+                  <div class="flex-row dark-red">
+                  {% endif %}
+                      <span class="left width-90">
+                        {{ form.DELETE }}
+                        {{ form.name }}
+                        {{ form.name.errors }}
+                        {{ form.non_field_errors }}
+                      </span>
+                      <span class="right width-10">
+                        <button class="button no-border" type="button" id="edit-issue-dropdown"
+                        onclick="edit_dropdown($(this))">
+                          <i class="material-icons">keyboard_arrow_down</i>
+                        </button>
+                      </span>
+                  </div>
+                  <div class="pad-top pd08 dropdown-content" style="display: none;">
+                      <div class="even-columns pad-bottom">
+                          <span>
+                              {{ form.summary }}
+                              {{ form.summary.errors }}
+                          </span>
+                          <span>
+                            <div class="pad-bottom width-90">
+                                {{ form.severity }}
+                                {{ form.severity.errors }}
+                            </div>
+                          </span>
+                      </div>
+
+                      <div class="even-columns pad-bottom">
+                          <span>
+                              {{ form.affected_hosts }}
+                              {{ form.affected_hosts.errors }}
+                          </span>
+                          <span>
+                              {{ form.description }}
+                              {{ form.description.errors }}
+                          </span>
+                          <span>
+                              {{ form.impact }}
+                              {{ form.impact.errors }}
+                          </span>
+                          <span>
+                              {{ form.solution }}
+                              {{ form.solution.errors }}
+                          </span>
+                          <span>
+                            <div class="pad-bottom pad-right pd1 width-90">
+                                {{ form.reference }}
+                                {{ form.reference.errors }}
+                            </div>
+                            <div>
+                                {{ form.cvss_rating }}
+                                {{ form.cvss_rating.errors }}
+                            </div>
+                          </span>
+                      </div>
+
+                      <div class="pad-bottom flex-columns width-90" id="preview-{{ form.proof_screenshot.id_for_label }}">
+                          {% if form.instance.proof_screenshot %}
+                              <img src="{{form.instance.proof_screenshot.url}}"
+                              style="max-height: 100px;
+                              border: 2px solid lightgrey;
+                              margin-right: 2%;"/>
+                          {% endif %}
+                      </div>
+
+                      <div class="top-border">
+                        <label class="pad-top" for="{{ form.proof_screenshot.id_for_label }}">
+                            <i class="material-icons round-upload">attach_file</i>
+                            {{ form.proof_screenshot }}
+                        </label>
+                      </div>
+                  </div>
+              </div>
+          {% endfor %}
+        </div>
 
         <button type="button" class="forestgreen button no-border" id="add-issue">
           <i class="material-icons">add</i>
           Add Issue
         </button>
-
-
         <div class="button-row">
           <a href="{% url 'scan' %}" class="button-link">
             <i class="material-icons md-18 no-padding">arrow_back</i>
             Back
           </a>
-          <button type="submit" class="button" id="next">
+          <button type="submit" class="button" value="2" name="save" id="next">
             Next
             <i class="material-icons md-18 no-padding">arrow_forward</i>
           </button>
         </div>
-      </form>
-{% endblock %}
+  </form>{% endblock %}

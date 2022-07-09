@@ -1,10 +1,22 @@
 import json
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.decorators import login_required
 from .models import Cases, Issues, Recon
 from .forms import CaseForm, ReconForm, IssueFormSet
 from django.contrib import messages
 
+
+def search_vulns(request):
+    search_val = request.GET.get('search_val', None)
+    vulnerabilities = {}
+    with open('core/static/core/vulnerabilities/vulns.json', 'r', encoding='latin1') as reader:
+        vulnerabilities = json.loads(reader.read())
+    data = {
+        'results': [i for i in vulnerabilities if
+                    search_val.lower() in i['title'].lower() and search_val != ""]
+    }
+    return JsonResponse(data)
 
 
 @login_required
@@ -97,12 +109,26 @@ def scan(request):
 
 @login_required
 def analysis(request):
+    case = Cases.objects.get(id=request.session['caseID'])
+    orderIssues = case.issues_set.order_by("-id")
     if request.method == "POST":
-        # do stuff
-        return redirect('')
+        formset = IssueFormSet(request.POST, request.FILES, instance=case, queryset=orderIssues)
+        if formset.is_valid():
+            formset.save()
+            if request.POST['save'] == '1':
+                messages.success(request, "Saved Successfully")
+                return redirect('analysis')
+            elif request.POST['save'] == '2':
+                return redirect('analysis')
+        else:
+            messages.error(request, f"{formset.errors}{formset.non_form_errors()}")
+    else:
+
+        formset = IssueFormSet(instance=case, queryset=orderIssues)
 
     context = {
         "title": "Analysis",
+        "formset": formset
     }
     return render(request, 'core/Analysis.html', context)
 

@@ -72,9 +72,11 @@ class Recon(models.Model):
 class Issues(models.Model):
     case = models.ForeignKey(Cases, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
-    summary = models.TextField(blank=True)
-    severity = models.CharField(max_length=100, choices=severity_levels)
+    severity = models.CharField(blank=True, max_length=100, choices=severity_levels)
+    affected_hosts = models.TextField(blank=True)
     description = models.TextField(blank=True)
+    impact = models.TextField(blank=True)
+    solution = models.TextField(blank=True)
     reference = models.TextField(blank=True)
     cvss_rating = models.IntegerField(blank=True, null=True)
     proof_screenshot = models.ImageField(blank=True, upload_to=f'Cases/Screenshots')

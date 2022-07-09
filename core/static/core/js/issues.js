@@ -1,8 +1,13 @@
 $(document).ready(function(){
 
   $("#issue-popup").hide();
-  var title = "";
-  var previewID = 0;
+  let inner_card = $('.inner-card');
+  //clone the issue form
+  let clonedIssueForm= inner_card[inner_card.length - 1].cloneNode(true);
+  let container = $("#issues-div");
+  let appendButton = $("#append-issue");
+  let totalForms = $("#id_issues_set-TOTAL_FORMS");
+  let formNum = $('.inner-card').length - 1;
 
   $("#add-issue").click(function(){
     $("#issue-popup").show();
@@ -10,97 +15,73 @@ $(document).ready(function(){
     $("#issue-title").css({"width":"90%", "margin": "2rem 0rem 2rem 0rem",
     "padding" : "0.4rem", "border": "medium solid forestgreen",
     "border-radius": "0.4rem"});
+    $("#issue-title").val("");
   });
 
   $("#cancel").click(function(){
-    $("#issue-popup").hide();
+      $("#issue-popup").hide();
   });
 
-  $("#append-issue").click(function(){
-    title = $("#issue-title").val();
-    previewID++;
+  appendButton.click((e)=>{
+    e.preventDefault();
+    let newForm = clonedIssueForm;
+    //Regex to find all instances of the form number
+    let formRegex = RegExp(`issues_set-(\\d){1}-`,'g');
+    //Increment the form number
+    formNum++;
+    console.log(formNum);
 
-    $("#add-issue").before(`<div class="inner-card" id="inner-card">
-      <div class="flex-row">
-        <span class="left">
-          <button class="button no-border" id="remove-issue"
-          onclick="remove_issue($(this))">
-            <i class="material-icons">remove_circle</i>
-          </button>
-          ${title}
-          <button class="button no-border" type="button" id="edit-issue">
-            <i class="material-icons">edit</i>
-          </button>
-        </span>
+    newForm ="<div class='inner-card'>" +
+    newForm.innerHTML.replace(formRegex, `form-${formNum}-`) +
+    "</div>";//Update the new form to have the correct form number
 
-        <span class="right">
-          <button class="button no-border" type="button" id="edit-issue-dropdown"
-          onclick="edit_dropdown($(this))">
-            <i class="material-icons">keyboard_arrow_down</i>
-          </button>
-        </span>
-      </div>
+    function get_vuln_data(){
+        let ajax_url = $('#issue-title').attr("data-ajax_url");
+        let value = $('#issue-title').val();
+        let formData = null;
+        $.ajax({
+            url: ajax_url,
+            data: {
+              'search_val': value
+            },
+            dataType: 'json',
+            async: false,
+            cache: false,
+            success: function (data) {
+                formData = data.results.filter((el)=>{
+                    if(el['title'] == value){
+                        return el;
+                    }
+                });
 
-      <div class="pad-top pd08" id="dropdown-content" style="display: none;">
-        <div class="even-columns pad-bottom">
-            <span>
-              <textarea name="proof" id="proof" rows="5" class="t-area"
-               placeholder="Proof of Concept"></textarea>
-            </span>
-            <span>
-              <div class="pad-bottom width-90">
-                <select class="select-field bottom-border" id="severity">
-                  <option class="grey-text" value="" disabled selected>Severity</option>
-                  <option value="Critical">Critical</option>
-                  <option value="High">High</option>
-                  <option value="Medium">Medium</option>
-                  <option value="Low">Low</option>
-                  <option value="Info">Info</option>
-                </select>
-              </div>
-              <div class="width-90">
-                <input placeholder="Find Date"
-                class="input-field width-100 bottom-border" type="text"
-                onfocus="(this.type='date')"
-                onblur="(this.type='text')" id="find-date" />
-              </div>
-            </span>
-        </div>
+                formData = formData[0];
+                //console.log(formData['title']);
+            }
+        });
+        return formData;
+    }
 
-        <div class="even-columns pad-bottom">
-            <span>
-              <textarea name="desc" id="desc" rows="3" class="t-area text-scroll"
-               placeholder="Description"></textarea>
-            </span>
-            <span>
-              <div class="pad-bottom pad-right pd1 width-90">
-                <textarea name="reference" id="reference" rows="1"
-                class="t-area" style="width: 100%;"
-                placeholder="Reference"></textarea>
-              </div>
-              <div>
-                <input class="input-field" type="number" placeholder="CVSS"
-                min="0"  max="10" step="1" id="cvss-rating" />
-              </div>
-            </span>
-        </div>
+    //append empty issue form
+    container.append(newForm);
+    totalForms.attr('value', `${formNum+1}`);
 
-        <div class="pad-bottom flex-columns width-90" id="preview-${previewID}"></div>
-
-        <div class="top-border">
-          <label class="pad-top" for="${previewID}">
-            <i class="material-icons round-upload">attach_file</i>
-            <input type="file" onchange="preview($(this))"
-            id="${previewID}" accept="image/*" multiple>
-          </label>
-        </div>
-
-      </div>
-    </div>`);
-
-    //$(this).find("#dropdown-content").hide();
+    //get the same form
+    let lastAppended = inner_card.last();
+    //get vulnerability data
+    let formData = get_vuln_data();
+    if(formData){
+        //set form values
+        lastAppended.find('.issueName').val(formData['title']);
+        lastAppended.find('.issueSeverity').val(formData['severity']);
+        lastAppended.find('.issueDescription').val(formData['desc']);
+        lastAppended.find('.issueReference').val(formData['ref']);
+        lastAppended.find('.issueRating').val(formData['cvss']);
+    }
+    else{
+        lastAppended.find('.issueName').val($('#issue-title').val());
+    }
+    //console.log(totalForms.val());
     $("#issue-popup").hide();
-
   });
 
 });
@@ -115,19 +96,15 @@ function edit_dropdown(issue){
     issue.children("i").text("keyboard_arrow_down");
   }
 
-  var thisIssue = issue.closest("#inner-card");
-  var issueDropdown = thisIssue.children("#dropdown-content");
+  var thisIssue = issue.closest(".inner-card");
+  var issueDropdown = thisIssue.children(".dropdown-content");
   issueDropdown.toggle("slow");
 
 }
 
-function remove_issue(issue){
-  issue.closest("#inner-card").hide("slow").remove();
-}
-
 function preview(input){
   var inputID = input.attr("id");
-  var img_preview = input.closest("#dropdown-content").children(`#preview-${inputID}`);
+  var img_preview = input.closest(".dropdown-content").children(`#preview-${inputID}`);
   console.log(img_preview);
   img_preview.empty();
 

@@ -9,25 +9,24 @@
         inner_card = inner_card[inner_card.length - 1];
         let container = $("#issues-div");
         let addButton = $("#add-issue");
-        let totalForms = $("#id_form-TOTAL_FORMS");
+        let totalForms = $("#id_issues_set-TOTAL_FORMS");
         let formNum = $('.inner-card').length - 1;
 
         addButton.click((e)=>{
           e.preventDefault();
           let newForm = inner_card.cloneNode(true); //clone the issue form
-          let formRegex = RegExp(`form-(\\d){1}-`,'g'); //Regex to find all instances of the form number
+          let formRegex = RegExp(`issues_set-(\\d){1}-`,'g'); //Regex to find all instances of the form number
           formNum++; //Increment the form number
-          
-          newForm = 
-          "<div class='inner-card'>" + 
+
+          newForm =
+          "<div class='inner-card'>" +
           newForm.innerHTML.replace(formRegex, `form-${formNum}-`) +
           "</div>";//Update the new form to have the correct form number
-          
+
           container.append(newForm);
           totalForms.attr('value', `${formNum+1}`);
         });
-
-       });
+      });
 
         function edit_dropdown(issue){
           dropdown_icon = issue.children("i").text();

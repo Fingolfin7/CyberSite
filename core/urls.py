@@ -9,4 +9,5 @@ urlpatterns = [
     path('scan', views.scan, name='scan'),
     path('analysis', views.analysis, name='analysis'),
     path('test_page', views.test_page, name='test_page'),
+    path('search_vulns', views.search_vulns, name='search_vulns'),
 ]
