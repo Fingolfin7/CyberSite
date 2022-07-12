@@ -29,20 +29,21 @@ $(document).ready(function(){
     let formRegex = RegExp(`issues_set-(\\d){1}-`,'g');
     //Increment the form number
     formNum++;
-    console.log(formNum);
 
     newForm ="<div class='inner-card'>" +
-    newForm.innerHTML.replace(formRegex, `form-${formNum}-`) +
+    newForm.innerHTML.replace(formRegex, `issues_set-${formNum}-`) +
     "</div>";//Update the new form to have the correct form number
 
     function get_vuln_data(){
         let ajax_url = $('#issue-title').attr("data-ajax_url");
+        let vuln_source = $("#issue-sources").val();
         let value = $('#issue-title').val();
         let formData = null;
         $.ajax({
             url: ajax_url,
             data: {
-              'search_val': value
+              'search_val': value,
+              'vuln_source': vuln_source
             },
             dataType: 'json',
             async: false,
@@ -62,11 +63,11 @@ $(document).ready(function(){
     }
 
     //append empty issue form
-    container.append(newForm);
+    container.prepend(newForm);
     totalForms.attr('value', `${formNum+1}`);
 
     //get the same form
-    let lastAppended = inner_card.last();
+    let lastAppended = $('.inner-card').last();
     //get vulnerability data
     let formData = get_vuln_data();
     if(formData){

@@ -9,8 +9,9 @@ from django.contrib import messages
 
 def search_vulns(request):
     search_val = request.GET.get('search_val', None)
+    vuln_source = request.GET.get('vuln_source', None)
     vulnerabilities = {}
-    with open('core/static/core/vulnerabilities/vulns.json', 'r', encoding='latin1') as reader:
+    with open(f'core/static/core/vulnerabilities/{vuln_source}', 'r', encoding='latin1') as reader:
         vulnerabilities = json.loads(reader.read())
     data = {
         'results': [i for i in vulnerabilities if
@@ -39,7 +40,8 @@ def new_case(request, caseID=None):
         else:
             case = CaseForm(request.POST, request.FILES)
         if case.is_valid():
-            case.save()
+            if case.has_changed():
+                case.save()
             name = case.cleaned_data.get('caseName')
             request.session['caseID'] = Cases.objects.filter(caseName=name)[0].id
             return redirect('recon')
@@ -60,6 +62,14 @@ def new_case(request, caseID=None):
     return render(request, 'core/NewCase.html', context)
 
 
+def get_recon_tools(request):
+    caseID = request.session['caseID']
+    recon_tools = json.loads(Cases.objects.get(id=caseID).recon.tools)
+    data ={
+        'tools': recon_tools
+    }
+    return JsonResponse(data)
+
 @login_required
 def recon(request):
     caseID = request.session['caseID']
@@ -70,7 +80,7 @@ def recon(request):
 
         if recon_form.is_valid():
             recon_form.save()
-            return redirect('scan')
+            return redirect('analysis')
         else:
             for field in ['tools', 'passive_sources']:
                 if field in recon_form.errors:
@@ -78,24 +88,17 @@ def recon(request):
                     messages.error(request, f"{field}: {error}")
     else:
         reconInstance = Cases.objects.get(id=caseID).recon
-        # tools_dict = json.loads(reconInstance.tools)
         recon_form = ReconForm(instance=reconInstance)
-        if recon_form.is_valid():
-            recon_form.save()
-            return redirect('scan')
 
-    # if len(tools_dict) == 0:
-    #   tools_dict = None
 
     context = {
         "title": "Reconnaissance",
         "form": recon_form
-        # "toolsDict": tools_dict
     }
     return render(request, 'core/Reconnaissance.html', context)
 
 
-@login_required
+'''@login_required
 def scan(request):
     if request.method == "POST":
         # do stuff
@@ -104,8 +107,29 @@ def scan(request):
     context = {
         "title": "Scan and Enumeration"
     }
-    return render(request, 'core/Scan.html', context)
+    return render(request, 'core/Scan.html', context)'''
 
+
+def get_issue_data(request):
+    caseID = request.session['caseID']
+    severity_totals = {
+        "Critical": 0,
+        "High": 0,
+        "Medium": 0,
+        "Low": 0,
+        "Info": 0,
+    }
+
+    issues = Cases.objects.get(id=caseID).issues_set.all()
+
+    for issue in issues:
+        if issue.severity in severity_totals:
+            severity_totals[issue.severity] += 1
+
+    data = {
+        'severity_totals': severity_totals
+    }
+    return JsonResponse(data)
 
 @login_required
 def analysis(request):

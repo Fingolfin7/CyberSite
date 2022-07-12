@@ -63,8 +63,8 @@ class IssueForm(forms.ModelForm):
                                                      'placeholder': 'Solution'}),
                    'reference': forms.Textarea(attrs={'class': 't-area issueReference', 'rows': '1',
                                                       'placeholder': 'Reference'}),
-                   'cvss_rating': forms.NumberInput(attrs={'class': 'input-field issueRating', 'min': 0, 'max': 10,
-                                                           'step': 1, 'placeholder': "CVSS"}),
+                   'cvss_rating': forms.NumberInput(attrs={'class': 'input-field issueRating', 'min': 0.0, 'max': 10.0,
+                                                           'step': 1.0, 'placeholder': "CVSS"}),
                    'proof_screenshot': forms.FileInput(attrs={'accept': 'image/*', 'onchange': "preview($(this))"})
                    }
 

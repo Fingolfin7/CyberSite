@@ -78,7 +78,7 @@ class Issues(models.Model):
     impact = models.TextField(blank=True)
     solution = models.TextField(blank=True)
     reference = models.TextField(blank=True)
-    cvss_rating = models.IntegerField(blank=True, null=True)
+    cvss_rating = models.FloatField(blank=True, null=True)
     proof_screenshot = models.ImageField(blank=True, upload_to=f'Cases/Screenshots')
 
     def __str__(self):

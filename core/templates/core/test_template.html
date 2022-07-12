@@ -3,73 +3,42 @@
 {% load static %}
 
 {% block js_includes %}
-    <script type="text/javascript">
-      $(document).ready(()=>{
-        let inner_card = $('.inner-card');
-        inner_card = inner_card[inner_card.length - 1];
-        let container = $("#issues-div");
-        let addButton = $("#add-issue");
-        let totalForms = $("#id_issues_set-TOTAL_FORMS");
-        let formNum = $('.inner-card').length - 1;
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+        function drawChart(selector){
+            let totals = [['Severity Level','Count']];
+            $.ajax({
+                url: '/get_issue_data',
+                dataType: 'json',
+                async: false,
+                cache: false,
+                success: function (data) {
+                    let result = data.severity_totals;
+                    result = Object.keys(result).map((key) => [key, result[key]]);
+                    for(i = 0; i < result.length; i++){
+                        totals.push(result[i]);
+                    }
+                }
+            });
 
-        addButton.click((e)=>{
-          e.preventDefault();
-          let newForm = inner_card.cloneNode(true); //clone the issue form
-          let formRegex = RegExp(`issues_set-(\\d){1}-`,'g'); //Regex to find all instances of the form number
-          formNum++; //Increment the form number
-
-          newForm =
-          "<div class='inner-card'>" +
-          newForm.innerHTML.replace(formRegex, `form-${formNum}-`) +
-          "</div>";//Update the new form to have the correct form number
-
-          container.append(newForm);
-          totalForms.attr('value', `${formNum+1}`);
-        });
-      });
-
-        function edit_dropdown(issue){
-          dropdown_icon = issue.children("i").text();
-
-          if(dropdown_icon == "keyboard_arrow_down"){
-            issue.children("i").text("keyboard_arrow_up");
-          }
-          else{
-            issue.children("i").text("keyboard_arrow_down");
-          }
-
-          var thisIssue = issue.closest(".inner-card");
-          var issueDropdown = thisIssue.children(".dropdown-content");
-          issueDropdown.toggle("slow");
-
-        }
-        function preview(input){
-          var inputID = input.attr("id");
-          var img_preview = input.closest(".dropdown-content").children(`#preview-${inputID}`);
-          console.log(img_preview);
-          img_preview.empty();
-
-          if($(input)[0].files){
-            for(var i = 0; i < $(input)[0].files.length; i++){
-              var img_src = URL.createObjectURL($(input)[0].files[i]);
-              URL.revokeObjectURL($(input)[0].files[i]); // free up memory
-              var img_name = $(input)[0].files[i].name;
-
-              img_preview.append(`<img src="${img_src}" alt="${img_name}"
-              style="max-height: 100px;
-              border: 2px solid lightgrey;
-              margin-right: 2%;"/>`);
-            }
-
-          }
-          else{
-            console.log(`Nope! ${$(input)[0].files}`);
-          }
+            totals = google.visualization.arrayToDataTable(totals);
+            let options = {
+                pieSliceText: 'percentage',
+                colors: ['red', 'orange','yellow','green','blue'],
+                width:500,
+                height:500,
+                animation: {duration: 1000, easing: 'out',}
+            };
+            let chart = new google.visualization.PieChart(document.getElementById('chart'));
+            chart.draw(totals, options);
         }
     </script>
 {% endblock %} 
 
 {% block content %}
+  <div class='card' id="chart"></div>
   <form class="card form"  method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <h3><u>Testing</u></h3>

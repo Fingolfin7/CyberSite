@@ -14,14 +14,16 @@
 {% block popup %}
     <div class="popup" id="issue-popup">
         <div class="popup-content">
-          <!--Add Issue from:
+          Add Issue from:
           <select class="select-field" name="issue-sources" id="issue-sources">
-            <option value="">Source 1</option>
-            <option value="">Source 2</option>
-            <option value="">Source 3</option>
+            <option value="vulns.json">General</option>
+            <option value="CWE_V.4.3.json">CWE (Common Weakness Enumeration)</option>
+            <option value="OWAS.json">OWASP (Open Web Application Security Project)</option>
+            <option value="mobile-attack.json">Mobile</option>
+            <option value="enterprise-attack.json">Enterprise</option>
           </select>
 
-          <br>-->
+          <br>
 
           <input type="text" class="input-field" data-ajax_url="{% url 'search_vulns' %}" id="issue-title"
            placeholder="Issue Title">
@@ -73,7 +75,7 @@
                         {{ form.name.errors }}
                         {{ form.non_field_errors }}
                       </span>
-                      <span class="right width-10">
+                      <span class="right">
                         <button class="button no-border" type="button" id="edit-issue-dropdown"
                         onclick="edit_dropdown($(this))">
                           <i class="material-icons">keyboard_arrow_down</i>
@@ -148,7 +150,7 @@
           Add Issue
         </button>
         <div class="button-row">
-          <a href="{% url 'scan' %}" class="button-link">
+          <a href="{% url 'recon' %}" class="button-link">
             <i class="material-icons md-18 no-padding">arrow_back</i>
             Back
           </a>
