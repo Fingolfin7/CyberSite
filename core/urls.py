@@ -12,4 +12,5 @@ urlpatterns = [
     path('search_vulns', views.search_vulns, name='search_vulns'),
     path('get_recon_tools', views.get_recon_tools, name='get_recon_tools'),
     path('get_issue_data', views.get_issue_data, name='get_issue_data'),
+    path('generateReport', views.generateReport, name='generateReport'),
 ]

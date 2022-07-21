@@ -1,16 +1,20 @@
+from datetime import datetime
 import json
-from django.http import JsonResponse
-from django.shortcuts import render, redirect, reverse
-from django.contrib.auth.decorators import login_required
-from .models import Cases, Issues, Recon
-from .forms import CaseForm, ReconForm, IssueFormSet
+import tempfile
+from docx.shared import Cm
+from docxtpl import DocxTemplate, InlineImage
 from django.contrib import messages
+from django.http import JsonResponse, FileResponse
+from .models import Cases
+from .forms import CaseForm, ReconForm, IssueFormSet
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 
 
 def search_vulns(request):
     search_val = request.GET.get('search_val', None)
     vuln_source = request.GET.get('vuln_source', None)
-    vulnerabilities = {}
+
     with open(f'core/static/core/vulnerabilities/{vuln_source}', 'r', encoding='latin1') as reader:
         vulnerabilities = json.loads(reader.read())
     data = {
@@ -49,14 +53,17 @@ def new_case(request, caseID=None):
         if caseID:
             thisCase = Cases.objects.get(id=caseID)
             case = CaseForm(instance=thisCase)
-        elif not caseID and 'caseID' in request.session:
+            title = thisCase.caseName
+        elif 'caseID' in request.session:
             thisCase = Cases.objects.get(id=request.session['caseID'])
             case = CaseForm(instance=thisCase)
+            title = thisCase.caseName
         else:
             case = CaseForm()
+            title = "New Case"
 
     context = {
-        "title": "New Case",
+        "title": title,
         "form": case
     }
     return render(request, 'core/NewCase.html', context)
@@ -65,10 +72,11 @@ def new_case(request, caseID=None):
 def get_recon_tools(request):
     caseID = request.session['caseID']
     recon_tools = json.loads(Cases.objects.get(id=caseID).recon.tools)
-    data ={
+    data = {
         'tools': recon_tools
     }
     return JsonResponse(data)
+
 
 @login_required
 def recon(request):
@@ -89,7 +97,6 @@ def recon(request):
     else:
         reconInstance = Cases.objects.get(id=caseID).recon
         recon_form = ReconForm(instance=reconInstance)
-
 
     context = {
         "title": "Reconnaissance",
@@ -131,6 +138,7 @@ def get_issue_data(request):
     }
     return JsonResponse(data)
 
+
 @login_required
 def analysis(request):
     case = Cases.objects.get(id=request.session['caseID'])
@@ -155,6 +163,51 @@ def analysis(request):
         "formset": formset
     }
     return render(request, 'core/Analysis.html', context)
+
+
+@login_required
+def generateReport(request):
+    case = Cases.objects.get(id=request.session['caseID'])
+    tmp = tempfile.NamedTemporaryFile(delete=False)  # create a temporary file
+    doc = DocxTemplate("core/static/core/report template/Report Template.docx")
+
+    context = {
+        'cover_date': datetime.now().strftime("%B %Y"),
+        'date': datetime.now().strftime("%d %B %Y"),
+        'case': {
+            'caseName': case.caseName,
+            'organization': case.organization,
+            'caseLead': case.caseLead,
+            'orgHandler': case.orgHandler,
+            'assessmentType': case.assessmentType.replace(':', ''),
+            'scope': case.scope,
+            'logo': InlineImage(doc, image_descriptor=case.logo,
+                                width=Cm(5)),
+            'createDate': case.createDate.strftime("%B %d, %Y"),
+            'lastUpdate': case.lastUpdate.strftime("%B %d, %Y")
+        },
+        'issues': [
+            {
+                'name': issue.name,
+                'severity': issue.severity,
+                'affected_hosts': issue.affected_hosts,
+                'description': issue.description,
+                'impact': issue.impact,
+                'solution': issue.solution,
+                'reference': issue.reference,
+                'cvss_rating': issue.cvss_rating,
+                'proof_screenshot': InlineImage(doc, image_descriptor=issue.proof_screenshot, width=Cm(10))
+                if issue.proof_screenshot
+                else '',
+            } for issue in case.issues_set.all()
+        ],
+        'issues_count': len(case.issues_set.all())
+    }
+
+    doc.render(context)
+    doc.save(tmp.name)
+    stream_file = open(tmp.name, 'rb')
+    return FileResponse(stream_file, as_attachment=True, filename=f'{case.caseName} Report.docx')
 
 
 @login_required

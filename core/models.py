@@ -1,7 +1,10 @@
+import os
+
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.utils import timezone
 from PIL import Image
-
+from pathlib import Path
 
 assessments = [
     ("White Box:", "White Box"),
@@ -27,7 +30,7 @@ severity_levels = [
     ("Medium", "Medium"),
     ("Low", "Low"),
     ("Info", "Info"),
- ]
+]
 
 
 class Cases(models.Model):
@@ -79,11 +82,11 @@ class Issues(models.Model):
     solution = models.TextField(blank=True)
     reference = models.TextField(blank=True)
     cvss_rating = models.FloatField(blank=True, null=True)
-    proof_screenshot = models.ImageField(blank=True, upload_to=f'Cases/Screenshots')
+    proof_screenshot = models.ImageField(blank=True, upload_to=f'Cases/Screenshots', validators=[
+        FileExtensionValidator(allowed_extensions=['jpg', 'png', 'jfif', 'exif', 'gif', 'tiff', 'bmp'])])
 
     def __str__(self):
         return f"{self.case.caseName} Issue ({self.id})"
 
     class Meta:
         verbose_name_plural = "Issues"
-

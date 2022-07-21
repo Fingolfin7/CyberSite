@@ -9,7 +9,7 @@
 {% block content %}
   <form class="card form" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <h2>New Case</h2>
+        <h2>{{title}}</h2>
         <h3><u>Details</u></h3>
         <div>
           {{ form.caseName.label_tag }}

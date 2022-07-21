@@ -65,7 +65,8 @@ class IssueForm(forms.ModelForm):
                                                       'placeholder': 'Reference'}),
                    'cvss_rating': forms.NumberInput(attrs={'class': 'input-field issueRating', 'min': 0.0, 'max': 10.0,
                                                            'step': 1.0, 'placeholder': "CVSS"}),
-                   'proof_screenshot': forms.FileInput(attrs={'accept': 'image/*', 'onchange': "preview($(this))"})
+                   'proof_screenshot': forms.FileInput(attrs={'accept': ".jpg, .png, .jfif, .exif, .gif, .tiff, .bmp",
+                                                              'onchange': "preview($(this))"})
                    }
 
         labels = {k: "" for k in fields}
