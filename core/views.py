@@ -147,11 +147,8 @@ def analysis(request):
         formset = IssueFormSet(request.POST, request.FILES, instance=case, queryset=orderIssues)
         if formset.is_valid():
             formset.save()
-            if request.POST['save'] == '1':
-                messages.success(request, "Saved Successfully")
-                return redirect('analysis')
-            elif request.POST['save'] == '2':
-                return redirect('analysis')
+            messages.success(request, "Saved Successfully")
+            return redirect('analysis')
         else:
             messages.error(request, f"{formset.errors}{formset.non_form_errors()}")
     else:

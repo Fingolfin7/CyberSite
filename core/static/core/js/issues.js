@@ -1,9 +1,9 @@
 $(document).ready(function(){
-
   $("#issue-popup").hide();
+  $("#chart").hide();
+
   let inner_card = $('.inner-card');
-  //clone the issue form
-  let clonedIssueForm= inner_card[inner_card.length - 1].cloneNode(true);
+  let clonedIssueForm= inner_card[inner_card.length - 1].cloneNode(true); //clone the issue form
   let container = $("#issues-div");
   let appendButton = $("#append-issue");
   let totalForms = $("#id_issues_set-TOTAL_FORMS");
@@ -25,10 +25,8 @@ $(document).ready(function(){
   appendButton.click((e)=>{
     e.preventDefault();
     let newForm = clonedIssueForm;
-    //Regex to find all instances of the form number
-    let formRegex = RegExp(`issues_set-(\\d){1}-`,'g');
-    //Increment the form number
-    formNum++;
+    let formRegex = RegExp(`issues_set-(\\d){1}-`,'g'); //Regex to find all instances of the form number
+    formNum++; //Increment the form number
 
     newForm ="<div class='inner-card'>" +
     newForm.innerHTML.replace(formRegex, `issues_set-${formNum}-`) +
@@ -66,10 +64,8 @@ $(document).ready(function(){
     container.prepend(newForm);
     totalForms.attr('value', `${formNum+1}`);
 
-    //get the same form
-    let lastAppended = $('.inner-card').last();
-    //get vulnerability data
-    let formData = get_vuln_data();
+    let lastAppended = $('.inner-card').last(); //get the same form
+    let formData = get_vuln_data(); //get vulnerability data
     if(formData){
         //set form values
         lastAppended.find('.issueName').val(formData['title']);
@@ -85,6 +81,12 @@ $(document).ready(function(){
     $("#issue-popup").hide();
   });
 
+
+  $("#view_stats").click(function(){
+    $("#chart").toggle("slow");
+    $("#issues-div").toggle("slow");
+    $("#add-issue").toggle("slow");
+  });
 });
 
 function edit_dropdown(issue){

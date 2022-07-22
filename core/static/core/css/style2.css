@@ -101,6 +101,21 @@ body{
 .width-10{
   width: 10%;
 }
+.width-15{
+  width: 15%;
+}
+
+.width-20{
+  width: 20%;
+}
+
+.width-25{
+  width: 25%;
+}
+
+.width-45{
+  width: 45%;
+}
 
 .width-100{
   width: 100%;
@@ -222,7 +237,7 @@ select:invalid{
   border-top-style: solid;
   border-color: forestgreen;
   text-align: center;
-  padding:0 1rem 0 1rem;
+  padding: 0 1rem 0 1rem;
   font-family: inherit;
   font-size: inherit;
 }
@@ -323,18 +338,25 @@ button > .material-icons {
   padding: 0rem;
 }
 
-@media (max-width: 480px){
+@media only screen and (min-width: 300px) and (max-width: 1200px){
   body{
     font-size: 12px;
   }
-
   #back > i, #next > i{
     font-size: 15px;
   }
-
   .account-img {
-      border-radius: 50%;
-      height: 70px;
-      width: 70px;
-    }
+    border-radius: 50%;
+    height: 70px;
+    width: 70px;
+  }
+  .button, .button-link{
+    font-size: 0.8rem;
+    padding: 0 0.1rem 0 0.1rem;
+    margin-left: 0.5rem;
+  }
+  #issues-corner-buttons{
+    width: auto;
+  }
 }
+
