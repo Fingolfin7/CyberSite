@@ -7,10 +7,12 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"> </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js" type="text/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!--chart js-->
+    <script src="https://cdn.jsdelivr.net/gh/emn178/chartjs-plugin-labels/src/chartjs-plugin-labels.js"></script>
     <script src = "{% static 'core/js/chart.js' %}" type="text/javascript"></script>
     <script src = "{% static 'core/js/issues.js' %}" type="text/javascript"></script>
     <script src = "{% static 'core/js/search.js' %}" type="text/javascript"></script>
     <link rel="stylesheet" href="{% static 'core/css/autocomplete.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/tables.css' %}">
 {% endblock %}
 
 {% block popup %}
@@ -49,7 +51,7 @@
         {% csrf_token %}
         <div class="flex-row">
             <span class="left"><h3><u>Analysis</u></h3></span>
-            <span class="flex-row width-25" id="issues-corner-buttons">
+            <span class="flex-row width-20" id="issues-corner-buttons">
                 <button type="button" class="blue-grey button no-border" name="stats" id="view_stats">
                     <i class="material-icons">insert_chart</i>
                     Stats
@@ -60,11 +62,17 @@
                 </button>
             </span>
         </div>
-        <div class='inner-card even-columns' id="chart">
-            <span class="cols" id="stats_stuff"></span>
-            <span class="cols">
+        <div class='inner-card' id="chart">
+            <table>
+                <tr class="flex-row">
+                    <td class="no-border width-100" id="stats_stuff"></td>
+                    <td class="no-border"><canvas id="myChart" ></canvas></td>
+                </tr>
+            </table>
+            <!--<span class="left width-50" id="stats_stuff"></span>
+            <span class="right width-25">
                 <canvas id="myChart" ></canvas>
-            </span>
+            </span> -->
         </div>
         <div id="issues-div">
           {{ formset.management_form }}

@@ -81,7 +81,6 @@ $(document).ready(function(){
     $("#issue-popup").hide();
   });
 
-
   $("#view_stats").click(function(){
     $("#chart").toggle("slow");
     $("#issues-div").toggle("slow");

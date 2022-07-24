@@ -105,18 +105,6 @@ def recon(request):
     return render(request, 'core/Reconnaissance.html', context)
 
 
-'''@login_required
-def scan(request):
-    if request.method == "POST":
-        # do stuff
-        return redirect('analysis')
-
-    context = {
-        "title": "Scan and Enumeration"
-    }
-    return render(request, 'core/Scan.html', context)'''
-
-
 def get_issue_data(request):
     caseID = request.session['caseID']
     severity_totals = {

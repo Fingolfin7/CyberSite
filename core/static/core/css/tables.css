@@ -25,3 +25,7 @@ th{
   border-color: forestgreen;
   text-align: left;
 }
+
+.no-borders{
+  border: none;
+}

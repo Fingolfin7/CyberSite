@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_cleanup.apps.CleanupConfig', # delete old images on imagefield update
+    'django_cleanup.apps.CleanupConfig',  # delete old images on imagefield update
 ]
 
 MIDDLEWARE = [
