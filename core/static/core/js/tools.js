@@ -101,8 +101,10 @@ function isInTable(table_selector, val1, val2){
 
 function buildTableFromDB(){
  let tools_obj = {};
+ let id = $("#back").attr("href").split("/")[2];
+ //console.log(id);
  $.ajax({
-            url: '/get_recon_tools',
+            url: '/get_recon_tools/' + id,
 
             dataType: 'json',
             async: false,
@@ -116,7 +118,7 @@ function buildTableFromDB(){
     return 0;
  }
 
- console.log(tools_obj);
+ //console.log(tools_obj);
 
  $("#tools-table").show();
 

@@ -7,8 +7,10 @@ from django.contrib import messages
 from django.http import JsonResponse, FileResponse
 from .models import Cases
 from .forms import CaseForm, ReconForm, IssueFormSet
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 
 def search_vulns(request):
@@ -24,15 +26,16 @@ def search_vulns(request):
     return JsonResponse(data)
 
 
-@login_required
-def cases(request):
-    if 'caseID' in request.session:
-        del request.session['caseID']
-    context = {
-        "title": "Cases",
-        "cases": Cases.objects.order_by('-lastUpdate')
-    }
-    return render(request, "core/Cases.html", context)
+class CaseListView(ListView):
+    model = Cases
+    template_name = 'core/home.html'
+    context_object_name = 'cases'
+    ordering = ['-lastUpdate']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Cases'
+        return context
 
 
 @login_required
@@ -69,9 +72,36 @@ def new_case(request, caseID=None):
     return render(request, 'core/NewCase.html', context)
 
 
-def get_recon_tools(request):
-    caseID = request.session['caseID']
-    recon_tools = json.loads(Cases.objects.get(id=caseID).recon.tools)
+class CaseCreateView(LoginRequiredMixin, CreateView):
+    model = Cases
+    form_class = CaseForm
+    template_name = 'core/cases.html'
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('recon')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'New Case'
+        return context
+
+
+class CaseUpdateView(LoginRequiredMixin, UpdateView):
+    model = Cases
+    form_class = CaseForm
+    template_name = 'core/cases.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = self.get_object().caseName
+        return context
+
+
+def get_recon_tools(request, pk: int):
+    recon_tools = json.loads(Cases.objects.get(id=pk).recon.tools)
     data = {
         'tools': recon_tools
     }
@@ -79,11 +109,9 @@ def get_recon_tools(request):
 
 
 @login_required
-def recon(request):
-    caseID = request.session['caseID']
-
+def recon(request, pk: int):
     if request.method == "POST":
-        reconInstance = Cases.objects.get(id=caseID).recon
+        reconInstance = Cases.objects.get(id=pk).recon
         recon_form = ReconForm(request.POST, instance=reconInstance)
 
         if recon_form.is_valid():
@@ -95,7 +123,7 @@ def recon(request):
                     error = repr(recon_form.errors[field]).split('\'')[1]
                     messages.error(request, f"{field}: {error}")
     else:
-        reconInstance = Cases.objects.get(id=caseID).recon
+        reconInstance = Cases.objects.get(id=pk).recon
         recon_form = ReconForm(instance=reconInstance)
 
     context = {

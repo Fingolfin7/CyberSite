@@ -1,10 +1,7 @@
-import os
-
 from django.core.validators import FileExtensionValidator
 from django.db import models
-from django.utils import timezone
+from django.urls import reverse
 from PIL import Image
-from pathlib import Path
 
 assessments = [
     ("White Box:", "White Box"),
@@ -45,6 +42,9 @@ class Cases(models.Model):
     createDate = models.DateTimeField(auto_now_add=True)
     lastUpdate = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        verbose_name_plural = "Cases"
+
     def __str__(self):
         return f"{self.caseName}"
 
@@ -56,8 +56,8 @@ class Cases(models.Model):
             img.thumbnail(output_size)
             img.save(self.logo.path)
 
-    class Meta:
-        verbose_name_plural = "Cases"
+    def get_absolute_url(self):
+        return reverse('recon', kwargs={'pk': self.pk})
 
 
 class Recon(models.Model):
