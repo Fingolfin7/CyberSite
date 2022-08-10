@@ -5,12 +5,12 @@ from docx.shared import Cm
 from docxtpl import DocxTemplate, InlineImage
 from django.contrib import messages
 from django.http import JsonResponse, FileResponse
-from .models import Cases
+from .models import Cases, Issues
 from .forms import CaseForm, ReconForm, IssueFormSet
 from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView
 
 
 def search_vulns(request):
@@ -36,40 +36,6 @@ class CaseListView(ListView):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Cases'
         return context
-
-
-@login_required
-def new_case(request, caseID=None):
-    if request.method == "POST":
-        if caseID:
-            thisCase = Cases.objects.get(id=caseID)
-            case = CaseForm(request.POST, request.FILES, instance=thisCase)
-        else:
-            case = CaseForm(request.POST, request.FILES)
-        if case.is_valid():
-            if case.has_changed():
-                case.save()
-            name = case.cleaned_data.get('caseName')
-            request.session['caseID'] = Cases.objects.filter(caseName=name)[0].id
-            return redirect('recon')
-    else:
-        if caseID:
-            thisCase = Cases.objects.get(id=caseID)
-            case = CaseForm(instance=thisCase)
-            title = thisCase.caseName
-        elif 'caseID' in request.session:
-            thisCase = Cases.objects.get(id=request.session['caseID'])
-            case = CaseForm(instance=thisCase)
-            title = thisCase.caseName
-        else:
-            case = CaseForm()
-            title = "New Case"
-
-    context = {
-        "title": title,
-        "form": case
-    }
-    return render(request, 'core/NewCase.html', context)
 
 
 class CaseCreateView(LoginRequiredMixin, CreateView):
@@ -116,7 +82,7 @@ def recon(request, pk: int):
 
         if recon_form.is_valid():
             recon_form.save()
-            return redirect('analysis')
+            return redirect('analysis', pk)
         else:
             for field in ['tools', 'passive_sources']:
                 if field in recon_form.errors:
@@ -133,8 +99,7 @@ def recon(request, pk: int):
     return render(request, 'core/Reconnaissance.html', context)
 
 
-def get_issue_data(request):
-    caseID = request.session['caseID']
+def get_issue_data(request, pk: int):
     severity_totals = {
         "Critical": 0,
         "High": 0,
@@ -143,7 +108,7 @@ def get_issue_data(request):
         "Info": 0,
     }
 
-    issues = Cases.objects.get(id=caseID).issues_set.all()
+    issues = Cases.objects.get(id=pk).issues_set.all()
 
     for issue in issues:
         if issue.severity in severity_totals:
@@ -178,9 +143,22 @@ def analysis(request):
     return render(request, 'core/Analysis.html', context)
 
 
+def analysis(request, pk: int):
+    case = Cases.objects.get(id=pk)
+    issues = case.issues_set.order_by("-id")
+
+    context = {
+        "title": "Analysis",
+        "issues": issues
+    }
+    return render(request, 'core/issues_list.html', context)
+
+
+
+
 @login_required
-def generateReport(request):
-    case = Cases.objects.get(id=request.session['caseID'])
+def generateReport(request, pk: int):
+    case = Cases.objects.get(id=pk)
     tmp = tempfile.NamedTemporaryFile(delete=False)  # create a temporary file
     doc = DocxTemplate("core/static/core/report template/Report Template.docx")
 

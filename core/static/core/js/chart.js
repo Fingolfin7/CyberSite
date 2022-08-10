@@ -7,9 +7,10 @@ function drawChart(){
     const stats_stuff = $('#stats_stuff');
     var ajax_data = [];
     var chart_labels = [];
-
+    let id = $("#back").attr("href").split("/")[2];
+    console.log(id);
     $.ajax({
-        url: '/get_issue_data',
+        url: '/get_issue_data/' + id,
         dataType: 'json',
         async: false,
         cache: false,
