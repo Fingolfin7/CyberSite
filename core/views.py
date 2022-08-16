@@ -154,8 +154,6 @@ def analysis(request, pk: int):
     return render(request, 'core/issues_list.html', context)
 
 
-
-
 @login_required
 def generateReport(request, pk: int):
     case = Cases.objects.get(id=pk)
