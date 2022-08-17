@@ -9,41 +9,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!--chart js-->
     <script src="https://cdn.jsdelivr.net/gh/emn178/chartjs-plugin-labels/src/chartjs-plugin-labels.js"></script>
     <script src = "{% static 'core/js/chart.js' %}" type="text/javascript"></script>
-    <script src = "{% static 'core/js/issues.js' %}" type="text/javascript"></script>
-    <script src = "{% static 'core/js/search.js' %}" type="text/javascript"></script>
     <link rel="stylesheet" href="{% static 'core/css/autocomplete.css' %}">
     <link rel="stylesheet" href="{% static 'core/css/tables.css' %}">
-{% endblock %}
-
-{% block popup %}
-    <div class="popup" id="issue-popup">
-        <div class="popup-content">
-          Add Issue from:
-          <select class="select-field" name="issue-sources" id="issue-sources">
-            <option value="vulns.json">General</option>
-            <option value="CWE_V.4.3.json">CWE (Common Weakness Enumeration)</option>
-            <option value="OWAS.json">OWASP (Open Web Application Security Project)</option>
-            <option value="mobile-attack.json">Mobile</option>
-            <option value="enterprise-attack.json">Enterprise</option>
-          </select>
-
-          <br>
-
-          <input type="text" class="input-field" data-ajax_url="{% url 'search_vulns' %}" id="issue-title"
-           placeholder="Issue Title">
-            <div id="autocomplete-cont"></div>
-
-          <button type="button" class="forestgreen button no-border" id="append-issue">
-            <i class="material-icons">add</i>
-            Add Issue
-          </button>
-
-          <button type="button" class="blue-grey button no-border" id="cancel">
-            <i class="material-icons">cancel</i>
-            Cancel
-          </button>
-        </div>
-    </div>
 {% endblock %}
 
 {% block content %}
@@ -51,14 +18,10 @@
         {% csrf_token %}
         <div class="flex-row">
             <span class="left"><h3><u>Analysis</u></h3></span>
-            <span class="flex-row width-20" id="issues-corner-buttons">
+            <span class="flex-row" id="issues-corner-buttons">
                 <button type="button" class="blue-grey button no-border" name="stats" id="view_stats">
                     <i class="material-icons">insert_chart</i>
                     Stats
-                </button>
-                <button type="submit" class="dodgerblue button no-border" name="save">
-                    <i class="material-icons">save</i>
-                    Save
                 </button>
             </span>
         </div>
@@ -78,7 +41,7 @@
                       {{ issue.name }}
                     </span>
                     <span class="right">
-                      <a class="button-link no-border" href="{{issue.id}}">
+                      <a class="button-link no-border" href="{% url 'issue-update' issue.case.id issue.id %}">
                         <i class="material-icons">edit</i>
                       </a>
                     </span>
@@ -86,10 +49,10 @@
             </div>
           {% endfor %}
         </div>
-            <button type="button" class="forestgreen button no-border" id="add-issue">
+            <a class="forestgreen button-link no-border" href="{% url 'issue-create' issues.0.case.id %}">
               <i class="material-icons">add</i>
               Add Issue
-            </button>
+            </a>
             <a class="button-link no-border blue-grey" href="{% url 'generateReport' issues.0.case.id %}">
               <i class="material-icons">download</i>
               Download Report

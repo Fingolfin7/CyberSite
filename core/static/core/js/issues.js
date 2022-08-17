@@ -1,6 +1,5 @@
 $(document).ready(function(){
   $("#issue-popup").hide();
-  $("#chart").hide();
 
   let inner_card = $('.inner-card');
   let clonedIssueForm= inner_card[inner_card.length - 1].cloneNode(true); //clone the issue form
@@ -79,12 +78,6 @@ $(document).ready(function(){
     }
     //console.log(totalForms.val());
     $("#issue-popup").hide();
-  });
-
-  $("#view_stats").click(function(){
-    $("#chart").toggle("slow");
-    $("#issues-div").toggle("slow");
-    $("#add-issue").toggle("slow");
   });
 });
 

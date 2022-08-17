@@ -6,7 +6,7 @@ from docxtpl import DocxTemplate, InlineImage
 from django.contrib import messages
 from django.http import JsonResponse, FileResponse
 from .models import Cases, Issues
-from .forms import CaseForm, ReconForm, IssueFormSet
+from .forms import CaseForm, ReconForm, IssueForm, IssueFormSet
 from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -143,15 +143,47 @@ def analysis(request):
     return render(request, 'core/Analysis.html', context)
 
 
-def analysis(request, pk: int):
-    case = Cases.objects.get(id=pk)
-    issues = case.issues_set.order_by("-id")
+class IssueListView(LoginRequiredMixin, ListView):
+    template_name = "core/issues_list.html"
+    context_object_name = "issues"
 
-    context = {
-        "title": "Analysis",
-        "issues": issues
-    }
-    return render(request, 'core/issues_list.html', context)
+    def get_queryset(self):
+        return Cases.objects.get(id=self.kwargs['pk']).issues_set.order_by("-id")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = "Analysis"
+        return context
+
+
+class IssueCreateView(LoginRequiredMixin, CreateView):
+    model = Issues
+    form_class = IssueForm
+    template_name = 'core/issue.html'
+
+    def form_valid(self, form):
+        form.instance.case = Cases.objects.get(id=self.kwargs['case_pk'])
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = "New Issue"
+        return context
+
+
+class IssueUpdateView(LoginRequiredMixin, UpdateView):
+    model = Issues
+    form_class = IssueForm
+    template_name = 'core/issue.html'
+
+    def form_valid(self, form):
+        messages.success(self.request, "Saved Successfully")
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = "New Issue"
+        return context
 
 
 @login_required

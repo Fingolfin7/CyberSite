@@ -88,5 +88,8 @@ class Issues(models.Model):
     def __str__(self):
         return f"{self.case.caseName} Issue ({self.id})"
 
+    def get_absolute_url(self):
+        return reverse('analysis', kwargs={'pk': self.case.pk})
+
     class Meta:
         verbose_name_plural = "Issues"

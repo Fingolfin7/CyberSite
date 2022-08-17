@@ -1,5 +1,13 @@
 $(document).ready(function(){
+    $("#chart").hide();
+
     drawChart();
+
+    $("#view_stats").click(function(){
+        $("#chart").toggle("slow");
+        $("#issues-div").toggle("slow");
+        $("#add-issue").toggle("slow");
+    });
 });
 
 function drawChart(){
