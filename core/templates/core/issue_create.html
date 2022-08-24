@@ -1,0 +1,157 @@
+{% extends 'core/base.html'%}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block js_includes %}
+    <script src= "https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> <!-- for jquery ui and autocomplete-->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"> </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js" type="text/javascript"></script>
+    <script src = "{% static 'core/js/poc.js' %}" type="text/javascript"></script>
+    <script src = "{% static 'core/js/poc_images.js' %}" type="text/javascript"></script>
+    <script src = "{% static 'core/js/issues.js' %}" type="text/javascript"></script>
+    <script src = "{% static 'core/js/search.js' %}" type="text/javascript"></script>
+    <link rel="stylesheet" href="{% static 'core/css/autocomplete.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/poc_images.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/popup.css' %}">
+{% endblock %}
+
+{% block popup %}
+    <div class="popup" id="issue-popup">
+        <div class="popup-content">
+          Add Issue from:
+          <select class="select-field" name="issue-sources" id="issue-sources">
+            <option value="vulns.json">General</option>
+            <option value="CWE_V.4.3.json">CWE (Common Weakness Enumeration)</option>
+            <option value="OWAS.json">OWASP (Open Web Application Security Project)</option>
+            <option value="mobile-attack.json">Mobile</option>
+            <option value="enterprise-attack.json">Enterprise</option>
+          </select>
+
+          <br>
+
+          <input type="text" class="input-field" data-ajax_url="{% url 'search_vulns' %}" id="issue-title"
+           placeholder="Issue Title">
+          <div id="autocomplete-cont"></div>
+
+          <button type="button" class="forestgreen button no-border" id="append-issue">
+            <i class="material-icons">add</i>
+            Add Issue
+          </button>
+
+          <button type="button" class="blue-grey button no-border" id="close">
+            <i class="material-icons">cancel</i>
+            Close
+          </button>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+  <form class="card form"  method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="flex-row">
+            <span class="left"><h3><u>{{ title }}</u></h3></span>
+            <span class="flex-row width-20" id="issues-corner-buttons">
+                <button type="submit" class="dodgerblue button no-border" name="save">
+                    <i class="material-icons">save</i>
+                    Save
+                </button>
+            </span>
+        </div>
+        <div id="issues-div">
+              {% for hidden in form.hidden_fields %} <!--to fix the issue with the 'id' field is required-->
+                  {{ hidden }}
+              {% endfor %}
+
+              <div class="flex-row">
+                  <span class="left width-100">
+                    {{ form.name }}
+                    {{ form.name.errors }}
+                    {{ form.non_field_errors }}
+                  </span>
+              </div>
+              <div class="pad-top pd08">
+                  <div class="even-columns pad-bottom">
+                      <span>
+                          {{ form.summary }}
+                          {{ form.summary.errors }}
+                      </span>
+                      <span>
+                        <div class="pad-bottom width-90">
+                            {{ form.severity }}
+                            {{ form.severity.errors }}
+                        </div>
+                      </span>
+                      <span>
+                          {{ form.affected_hosts }}
+                          {{ form.affected_hosts.errors }}
+                      </span>
+                      <span>
+                          {{ form.description }}
+                          {{ form.description.errors }}
+                      </span>
+                      <span>
+                          {{ form.impact }}
+                          {{ form.impact.errors }}
+                      </span>
+                      <span>
+                          {{ form.solution }}
+                          {{ form.solution.errors }}
+                      </span>
+                      <span>
+                        <div class="pad-bottom pad-right pd1 width-90">
+                            {{ form.reference }}
+                            {{ form.reference.errors }}
+                        </div>
+                        <div>
+                            {{ form.cvss_rating }}
+                            {{ form.cvss_rating.errors }}
+                        </div>
+                      </span>
+                  </div>
+
+                  <div class="poc_flex_section top-border">
+                      {{ poc_images.management_form }}
+                      {% for image_form in poc_images %}
+                        <table class="poc_table">
+                            <tr>
+                                <td class="poc_cell_top">
+                                    {% for hidden in image_form.hidden_fields %}
+                                        {{ hidden }}
+                                    {% endfor %}
+                                    {% if image_form.instance.image %}
+                                        <img  src="{{ image_form.instance.image.url }}" class="poc_img">
+                                    {% else %}
+                                        <label for="{{ image_form.image.id_for_label }}" class="poc_label">
+                                            <i class="material-icons round-upload upload_icon">cloud_upload</i>
+                                            {{ image_form.image }}
+                                        </label>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="poc_cell_bottom cadmium-red">
+                                    <b>Delete?</b>
+                                    {{ image_form.DELETE }}
+                                </td>
+                            </tr>
+                        </table>
+                      {% endfor %}
+                  </div>
+
+                  <div style="margin-top: 2%;">
+                      <button type="button" class="forestgreen button no-border"id="append-poc">
+                          <i class="material-icons">add</i>
+                          Add Screenshot
+                      </button>
+                  </div>
+              </div>
+        </div>
+        <div class="button-row">
+            <a href="{% url 'analysis' case_id %}" class="button-link">
+              <i class="material-icons md-18 no-padding">arrow_back</i>
+              Back
+            </a>
+        </div>
+  </form>
+{% endblock %}

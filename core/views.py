@@ -1,16 +1,19 @@
 from datetime import datetime
 import json
 import tempfile
+from django.db import transaction
 from docx.shared import Cm
 from docxtpl import DocxTemplate, InlineImage
 from django.contrib import messages
 from django.http import JsonResponse, FileResponse
-from .models import Cases, Issues
-from .forms import CaseForm, ReconForm, IssueForm, IssueFormSet
+from .models import Cases, Issues, PoC
+from .forms import CaseForm, ReconForm, IssueForm, POCFormSet
+from django.urls import reverse
 from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from cleantext import clean
 
 
 def search_vulns(request):
@@ -31,6 +34,7 @@ class CaseListView(ListView):
     template_name = 'core/home.html'
     context_object_name = 'cases'
     ordering = ['-lastUpdate']
+    paginate_by = 7
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -120,35 +124,13 @@ def get_issue_data(request, pk: int):
     return JsonResponse(data)
 
 
-@login_required
-def analysis(request):
-    case = Cases.objects.get(id=request.session['caseID'])
-    orderIssues = case.issues_set.order_by("-id")
-    if request.method == "POST":
-        formset = IssueFormSet(request.POST, request.FILES, instance=case, queryset=orderIssues)
-        if formset.is_valid():
-            formset.save()
-            messages.success(request, "Saved Successfully")
-            return redirect('analysis')
-        else:
-            messages.error(request, f"{formset.errors}{formset.non_form_errors()}")
-    else:
-
-        formset = IssueFormSet(instance=case, queryset=orderIssues)
-
-    context = {
-        "title": "Analysis",
-        "formset": formset
-    }
-    return render(request, 'core/Analysis.html', context)
-
-
 class IssueListView(LoginRequiredMixin, ListView):
     template_name = "core/issues_list.html"
     context_object_name = "issues"
+    paginate_by = 7
 
     def get_queryset(self):
-        return Cases.objects.get(id=self.kwargs['pk']).issues_set.order_by("-id")
+        return Cases.objects.get(id=self.kwargs['pk']).issues_set.order_by("-lastUpdate")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -159,32 +141,88 @@ class IssueListView(LoginRequiredMixin, ListView):
 class IssueCreateView(LoginRequiredMixin, CreateView):
     model = Issues
     form_class = IssueForm
-    template_name = 'core/issue.html'
+    template_name = 'core/issue_create.html'
 
-    def form_valid(self, form):
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST, request.FILES)
         form.instance.case = Cases.objects.get(id=self.kwargs['case_pk'])
-        return super().form_valid(form)
+        if form.is_valid():
+            issueInstance = form.save()
+            poc_images = POCFormSet(self.request.POST, self.request.FILES)
+            if poc_images.is_valid():
+                poc_images.instance = issueInstance
+                poc_images.save()
+                return HttpResponseRedirect(self.get_success_url())
+            else:
+                return self.form_invalid(form)
+
+    def get_success_url(self):
+        return reverse('analysis', kwargs={'pk': self.kwargs['case_pk']})
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context = super(IssueCreateView, self).get_context_data(**kwargs)
+        context['poc_images'] = POCFormSet()
         context['title'] = "New Issue"
+        context['case_id'] = self.kwargs['case_pk']
         return context
 
 
 class IssueUpdateView(LoginRequiredMixin, UpdateView):
     model = Issues
     form_class = IssueForm
-    template_name = 'core/issue.html'
+    template_name = 'core/issue_update.html'
 
     def form_valid(self, form):
-        messages.success(self.request, "Saved Successfully")
-        return super().form_valid(form)
+        context = self.get_context_data()
+        form.instance.case = Cases.objects.get(id=self.kwargs['case_pk'])
+        poc_images = context['poc_images']
+
+        if poc_images.is_valid():
+            messages.success(self.request, "Saved Successfully")
+            # poc_images.instance = self.object
+            poc_images.save()
+            return super().form_valid(form)
+
+    def get_queryset(self):
+        return Cases.objects.get(id=self.kwargs['case_pk']).issues_set.filter(id=self.kwargs['pk'])
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = "New Issue"
+        context = super(IssueUpdateView, self).get_context_data(**kwargs)
+        if self.request.POST:
+            context['poc_images'] = POCFormSet(self.request.POST, self.request.FILES,
+                                               instance=self.object)
+        else:
+            context['poc_images'] = POCFormSet(instance=self.object)
+        context['title'] = f'{self.object.case.caseName} - {self.object.name}'
         return context
 
+
+@login_required
+def Issues(request, *args, **kwargs):
+    issueInstance = Cases.objects.get(id=kwargs['case_pk']).issues_set.get(id=kwargs['pk'])
+    if request.method == "POST":
+        form = IssueForm(request.POST, instance=issueInstance)
+        poc = POCFormSet(request.POST, request.FILES, instance=issueInstance)
+
+        if form.is_valid() and poc.is_valid():
+            messages.success(request, "Saved Successfully")
+            form.save()
+            poc.save()
+            return redirect('analysis', kwargs['case_pk'])
+        else:
+            messages.error(request, f"Form: {form.errors}" if form.errors else
+                                    f"POC: {poc.errors}")
+
+    else:
+        form = IssueForm(instance=issueInstance)
+        poc = POCFormSet(instance=issueInstance)
+
+    context = {
+        "title": "Reconnaissance",
+        "form": form,
+        "poc_images": poc
+    }
+    return render(request, 'core/issue.html', context)
 
 @login_required
 def generateReport(request, pk: int):
@@ -209,43 +247,22 @@ def generateReport(request, pk: int):
         },
         'issues': [
             {
-                'name': issue.name,
-                'severity': issue.severity,
-                'affected_hosts': issue.affected_hosts,
-                'description': issue.description,
-                'impact': issue.impact,
-                'solution': issue.solution,
+                'name': clean(issue.name, fix_unicode=True, to_ascii=True, lower=False),
+                'severity': clean(issue.severity, fix_unicode=True, to_ascii=True, lower=False),
+                'affected_hosts': clean(issue.affected_hosts, fix_unicode=True, to_ascii=True, lower=False),
+                'description': clean(issue.description, fix_unicode=True, to_ascii=True, lower=False),
+                'impact': clean(issue.impact, fix_unicode=True, to_ascii=True, lower=False),
+                'solution': clean(issue.solution, fix_unicode=True, to_ascii=True, lower=False),
                 'reference': issue.reference,
                 'cvss_rating': issue.cvss_rating,
-                'proof_screenshot': InlineImage(doc, image_descriptor=issue.proof_screenshot, width=Cm(10))
-                if issue.proof_screenshot
-                else '',
+                'poc_list': [InlineImage(doc, image_descriptor=poc.image, width=Cm(10))
+                             for poc in issue.poc_set.all()],
             } for issue in case.issues_set.all()
         ],
         'issues_count': len(case.issues_set.all())
     }
-
+    print(context['issues'][2]['poc_list'])
     doc.render(context)
     doc.save(tmp.name)
     stream_file = open(tmp.name, 'rb')
     return FileResponse(stream_file, as_attachment=True, filename=f'{case.caseName} Report.docx')
-
-
-@login_required
-def test_page(request):
-    case = Cases.objects.get(id=request.session['caseID'])
-    orderIssues = case.issues_set.order_by("-id")
-    if request.method == "POST":
-        formset = IssueFormSet(request.POST, request.FILES, instance=case, queryset=orderIssues)
-        if formset.is_valid():
-            formset.save()
-            return redirect('test_page')
-    else:
-        # messages.error(request, f"{formset.errors}{formset.non_form_errors()}")
-        formset = IssueFormSet(instance=case, queryset=orderIssues)
-
-    context = {
-        "title": "Test",
-        "formset": formset
-    }
-    return render(request, 'core/test_template.html', context)

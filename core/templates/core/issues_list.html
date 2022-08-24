@@ -33,6 +33,19 @@
                 </tr>
             </table>
         </div>
+
+        {% if is_paginated and page_obj.number == 1 or not is_paginated %}
+            <a class="forestgreen button-link no-border" href="{% url 'issue-create' issues.0.case.id %}">
+                 <i class="material-icons">add</i>
+                 Add Issue
+            </a>
+            <a class="button-link no-border blue-grey" href="{% url 'generateReport' issues.0.case.id %}">
+                <i class="material-icons">download</i>
+                Download Report
+            </a>
+            <span class="flex-row"></span>
+        {% endif %}
+
         <div id="issues-div">
           {% for issue in issues %}
             <div class="inner-card">
@@ -49,19 +62,41 @@
             </div>
           {% endfor %}
         </div>
-            <a class="forestgreen button-link no-border" href="{% url 'issue-create' issues.0.case.id %}">
-              <i class="material-icons">add</i>
-              Add Issue
-            </a>
-            <a class="button-link no-border blue-grey" href="{% url 'generateReport' issues.0.case.id %}">
-              <i class="material-icons">download</i>
-              Download Report
-            </a>
-            <div class="button-row">
-              <a href="{% url 'recon' issues.0.case.id %}" class="button-link" id="back">
-                <i class="material-icons md-18 no-padding">arrow_back</i>
-                Back
-              </a>
+
+        {% if is_paginated %}
+            <div class="inner-card">
+                <div class="flex-row">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1" class="plain-link no-border button forestgreen width-10">First</a>
+                        <a href="?page={{ page_obj.previous_page_number }}" class="plain-link no-border button width-10">
+                            <i class="material-icons md-18 no-padding">arrow_back</i>
+                        </a>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <a href="?page={{ num }}" class="plain-link no-border button width-10">{{num}}</a>
+                        {% elif  num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <a href="?page={{ num }}" class="plain-link no-border button width-10">{{num}}</a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}" class="plain-link no-border button width-10">
+                            <i class="material-icons md-18 no-padding">arrow_forward</i>
+                        </a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}" class="plain-link no-border button forestgreen width-10">Last</a>
+                    {% endif %}
+                </div>
             </div>
+        {% endif %}
+
+        <div class="button-row">
+          <a href="{% url 'recon' issues.0.case.id %}" class="button-link" id="back">
+            <i class="material-icons md-18 no-padding">arrow_back</i>
+            Back
+          </a>
         </div>
-  </form>{% endblock %}
+        </div>
+  </form>
+{% endblock %}

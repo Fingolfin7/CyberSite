@@ -1,0 +1,40 @@
+.poc_flex_section{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.poc_table{
+    margin-right: 2%;
+    margin-bottom: 2%;
+    border-collapse: collapse;
+}
+
+.upload_icon{
+    width: auto;
+    margin-left: 40%;
+    margin-top: 20%;
+}
+
+.poc_cell_top{
+    display: flex;
+    justify-content: space-between;
+    height: 100px;
+    /*width: 100px;*/
+    border: 2px solid SlateGray;
+    border-bottom:  none;
+}
+
+.poc_cell_bottom{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 2px solid SlateGray;
+    height: 25px;
+}
+
+.poc_img{
+    height: 100%;
+    /*width: 100%;*/
+    margin-bottom: -0.75rem;
+}

@@ -2,13 +2,15 @@
 {% load crispy_forms_tags %}
 {% load static %}
 
-{% block jgs_includes %}
+{% block js_includes %}
     <script src= "https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> <!-- for jquery ui and autocomplete-->
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"> </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js" type="text/javascript"></script>
-    <script src = "{% static 'core/js/issues.js' %}" type="text/javascript"></script>
+    <script src = "{% static 'core/js/poc.js' %}" type="text/javascript"></script>
+    <script src = "{% static 'core/js/poc_images.js' %}" type="text/javascript"></script>
     <script src = "{% static 'core/js/search.js' %}" type="text/javascript"></script>
     <link rel="stylesheet" href="{% static 'core/css/autocomplete.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/poc_images.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -24,17 +26,16 @@
             </span>
         </div>
         <div id="issues-div">
-          <div>
-            {% for hidden in form.hidden_fields %} <!--to fix the issue with the 'id' field is required-->
-                {{ hidden }}
-            {% endfor %}
+              {% for hidden in form.hidden_fields %} <!--to fix the issue with the 'id' field is required-->
+                  {{ hidden }}
+              {% endfor %}
 
-            <div class="flex-row">
-                <span class="left width-90">
-                  {{ form.name }}
-                  {{ form.name.errors }}
-                  {{ form.non_field_errors }}
-                </span>
+              <div class="flex-row">
+                  <span class="left width-100">
+                    {{ form.name }}
+                    {{ form.name.errors }}
+                    {{ form.non_field_errors }}
+                  </span>
               </div>
               <div class="pad-top pd08">
                   <div class="even-columns pad-bottom">
@@ -48,9 +49,6 @@
                             {{ form.severity.errors }}
                         </div>
                       </span>
-                  </div>
-
-                  <div class="even-columns pad-bottom">
                       <span>
                           {{ form.affected_hosts }}
                           {{ form.affected_hosts.errors }}
@@ -79,22 +77,48 @@
                       </span>
                   </div>
 
-                  <div class="pad-bottom flex-columns width-90" id="preview-{{ form.proof_screenshot.id_for_label }}">
-                      {% if form.instance.proof_screenshot %}
-                          <img src="{{form.instance.proof_screenshot.url}}"
-                          style="max-height: 100px;
-                          border: 2px solid lightgrey;
-                          margin-right: 2%;"/>
-                      {% endif %}
+                  <div class="poc_flex_section top-border">
+                      {{ poc_images.management_form }}
+                      {% for image_form in poc_images %}
+                        <table class="poc_table">
+                            <tr>
+                                <td class="poc_cell_top">
+                                    {% for hidden in image_form.hidden_fields %}
+                                        {{ hidden }}
+                                    {% endfor %}
+                                    {% if image_form.instance.image %}
+                                        <img  src="{{ image_form.instance.image.url }}" class="poc_img">
+                                    {% else %}
+                                        <label for="{{ image_form.image.id_for_label }}" class="poc_label">
+                                            <i class="material-icons round-upload upload_icon">cloud_upload</i>
+                                            {{ image_form.image }}
+                                        </label>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="poc_cell_bottom cadmium-red">
+                                    <b>Delete?</b>
+                                    {{ image_form.DELETE }}
+                                </td>
+                            </tr>
+                        </table>
+                      {% endfor %}
                   </div>
 
-                  <div class="top-border">
-                    <label class="pad-top" for="{{ form.proof_screenshot.id_for_label }}">
-                        <i class="material-icons round-upload">attach_file</i>
-                        {{ form.proof_screenshot }}
-                    </label>
+                  <div style="margin-top: 2%;">
+                      <button type="button" class="forestgreen button no-border"id="append-poc">
+                          <i class="material-icons">add</i>
+                          Add Screenshot
+                      </button>
                   </div>
               </div>
-            </div>
         </div>
-  </form>{% endblock %}
+        <div class="button-row">
+            <a href="{% url 'analysis' form.instance.case.id %}" class="button-link">
+              <i class="material-icons md-18 no-padding">arrow_back</i>
+              Back
+            </a>
+        </div>
+  </form>
+{% endblock %}

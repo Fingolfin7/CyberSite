@@ -82,14 +82,26 @@ class Issues(models.Model):
     solution = models.TextField(blank=True)
     reference = models.TextField(blank=True)
     cvss_rating = models.FloatField(blank=True, null=True)
-    proof_screenshot = models.ImageField(blank=True, upload_to=f'Cases/Screenshots', validators=[
-        FileExtensionValidator(allowed_extensions=['jpg', 'png', 'jfif', 'exif', 'gif', 'tiff', 'bmp'])])
+    createDate = models.DateTimeField(auto_now_add=True)
+    lastUpdate = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.case.caseName} Issue ({self.id})"
+        return f"{self.case.caseName} {self.name} ({self.id})"
 
     def get_absolute_url(self):
         return reverse('analysis', kwargs={'pk': self.case.pk})
 
     class Meta:
         verbose_name_plural = "Issues"
+
+
+class PoC(models.Model):
+    issue = models.ForeignKey(Issues, on_delete=models.CASCADE)
+    image = models.ImageField(blank=True, upload_to=f'Cases/Screenshots', validators=[
+        FileExtensionValidator(allowed_extensions=['jpg', 'png', 'jfif', 'exif', 'gif', 'tiff', 'bmp'])])
+
+    def __str__(self):
+        return f"{self.issue.name} Image ({self.id})"
+
+    class Meta:
+        verbose_name_plural = "Issue Proof of Concepts"

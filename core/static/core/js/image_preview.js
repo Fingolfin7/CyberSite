@@ -1,7 +1,7 @@
 $(document).ready(function(){
     $("#logo").on('change', function(){
         var input = $('#logo');
-        var img_preview = $(`#preview`);
+        var img_preview = $('#preview');
         console.log(img_preview);
         img_preview.empty();
 

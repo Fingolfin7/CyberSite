@@ -1,0 +1,11 @@
+#issue-sources{
+    width: 40%;
+}
+
+#issue-title{
+   width: 90%;
+   margin: 2rem 0rem 2rem 0rem;
+   padding: 0.4rem;
+   border: medium solid forestgreen;
+   border-radius: 0.4rem;
+}
