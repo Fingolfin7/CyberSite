@@ -11,25 +11,29 @@
 
         <div class="flex-row">
             <h2>Cases</h2>
-            <a class="button-link" id="new-case" href="{% url 'case-create' %}">New Case</a>
+            <a class="plain-link" id="new-case" href="{% url 'case-create' %}">
+                <button class="button no-border forestgreen">
+                    <i class="material-icons">add</i>
+                    Case
+                </button>
+            </a>
         </div>
 
         <div class="inner-card">
             <table>
                 <tbody>
                     <tr>
-                        <th>
-                          <button class="button no-border">
-                            <i class="material-icons">folder</i>
-                          </button>
-                        </th>
+                         <th>
+                              {%if user.is_superuser %}
+                                  <button class="button no-border">
+                                    <i class="material-icons">delete</i>
+                                  </button>
+                              {% endif %}
+                            </th>
                         <th>Title</th>
                         <th>Create Date</th>
                         <th>
                             Last Update
-                            <button class="button no-border">
-                                <i class="material-icons">arrow_upward</i>
-                            </button>
                         </th>
                         <th>
                             <button class="button no-border">
@@ -41,9 +45,13 @@
                         {% for case in cases%}
                             <tr>
                                 <td>
-                                    <button class="button no-border">
-                                        <i class="material-icons">check_box_outline_blank</i>
-                                    </button>
+                                    {% if user.is_superuser %}
+                                        <a class="plain-link" href="{% url 'case-delete' case.id %}">
+                                            <button class="button no-border">
+                                                <i class="material-icons">remove_circle</i>
+                                            </button>
+                                        </a>
+                                    {% endif %}
                                 </td>
                                 <td>
                                     <a class="plain-link" href="{% url 'case-update' case.id %}">
@@ -86,9 +94,11 @@
                 <div class="inner-card">
                     <div class="flex-row">
                         {% if page_obj.has_previous %}
-                            <a href="?page=1" class="plain-link no-border button forestgreen width-10">First</a>
+                            <a href="?page=1" class="plain-link no-border button forestgreen width-10">
+                                <i class="material-icons md-18 no-padding">first_page</i>
+                            </a>
                             <a href="?page={{ page_obj.previous_page_number }}" class="plain-link no-border button width-10">
-                                <i class="material-icons md-18 no-padding">arrow_back</i>
+                                <i class="material-icons md-18 no-padding">navigate_before</i>
                             </a>
                         {% endif %}
 
@@ -102,9 +112,11 @@
 
                         {% if page_obj.has_next %}
                             <a href="?page={{ page_obj.next_page_number }}" class="plain-link no-border button width-10">
-                                <i class="material-icons md-18 no-padding">arrow_forward</i>
+                                <i class="material-icons md-18 no-padding">navigate_next</i>
                             </a>
-                            <a href="?page={{ page_obj.paginator.num_pages }}" class="plain-link no-border button forestgreen width-10">Last</a>
+                            <a href="?page={{ page_obj.paginator.num_pages }}" class="plain-link no-border button forestgreen width-10">
+                                <i class="material-icons md-18 no-padding">last_page</i>
+                            </a>
                         {% endif %}
                     </div>
                 </div>

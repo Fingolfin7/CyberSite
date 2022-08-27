@@ -12,7 +12,7 @@ from django.urls import reverse
 from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from cleantext import clean
 
 
@@ -47,12 +47,6 @@ class CaseCreateView(LoginRequiredMixin, CreateView):
     form_class = CaseForm
     template_name = 'core/cases.html'
 
-    def post(self, request, *args, **kwargs):
-        form = self.form_class(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('recon')
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'New Case'
@@ -69,6 +63,17 @@ class CaseUpdateView(LoginRequiredMixin, UpdateView):
         context['title'] = self.get_object().caseName
         return context
 
+
+class CaseDeleteView(LoginRequiredMixin, DeleteView):
+    model = Cases
+    context_object_name = 'case'
+    template_name = 'core/delete_case.html'
+    success_url = '/'
+    success_message = 'Case Deleted'
+
+    def delete(self, request, *args, **kwargs):
+        messages.warning(self.request, self.success_message)
+        return super(CaseDeleteView, self).delete(request, *args, **kwargs)
 
 def get_recon_tools(request, pk: int):
     recon_tools = json.loads(Cases.objects.get(id=pk).recon.tools)
@@ -197,6 +202,20 @@ class IssueUpdateView(LoginRequiredMixin, UpdateView):
         return context
 
 
+class IssueDeleteView(LoginRequiredMixin,DeleteView):
+    model = Issues
+    template_name = "core/delete_issue.html"
+    context_object_name = "issue"
+    success_message = "Issue deleted"
+
+    def delete(self, request, *args, **kwargs):
+        messages.warning(self.request, self.success_message)
+        return super(IssueDeleteView, self).delete(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse('analysis', kwargs={'pk': self.kwargs['case_pk']})
+
+
 @login_required
 def Issues(request, *args, **kwargs):
     issueInstance = Cases.objects.get(id=kwargs['case_pk']).issues_set.get(id=kwargs['pk'])
@@ -223,6 +242,7 @@ def Issues(request, *args, **kwargs):
         "poc_images": poc
     }
     return render(request, 'core/issue.html', context)
+
 
 @login_required
 def generateReport(request, pk: int):

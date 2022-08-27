@@ -1,0 +1,27 @@
+{% extends 'core/base.html'%}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+  <form class="card form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <h3 style="margin-bottom: 0;">Delete Issue</h3>
+        <p style="margin-top: 0;">
+            Are you sure you want to delete "{{ issue.name }}"?
+        </p>
+
+        <div>
+          <a href="{% url 'cases' %}" class="plain-link" id="back">
+            <button type="button" class="blue-grey button no-border">
+                <i class="material-icons md-18 no-padding">cancel</i>
+                Cancel
+            </button>
+          </a>
+          <button type="submit" class="cadmium-red button no-border" id="next">
+            <i class="material-icons md-18 no-padding">delete</i>
+            Yes, Delete
+          </button>
+        </div>
+      </form>
+{% endblock %}

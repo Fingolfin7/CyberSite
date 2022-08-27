@@ -11,24 +11,44 @@
         {% csrf_token %}
         <h2>{{title}}</h2>
         <h3><u>Details</u></h3>
+        {% for error in form.non_field_errors %}
+            <div>
+                {{error}}
+            </div>
+        {% endfor %}
+
         <div>
           {{ form.caseName.label_tag }}
           {{ form.caseName }}
+          {{ form.caseName.errors }}
+        </div>
+        <div>
+            {{ form.caseName.errors }}
         </div>
 
         <div>
           {{ form.organization.label_tag }}
           {{ form.organization }}
         </div>
+        <div>
+            {{ form.organization.errors }}
+        </div>
 
         <div>
           {{ form.caseLead.label_tag }}
           {{ form.caseLead }}
+          {{ form.caseLead.errors }}
+        </div>
+        <div>
+            {{ form.caseLead.errors }}
         </div>
 
         <div>
           {{ form.orgHandler.label_tag }}
           {{ form.orgHandler }}
+        </div>
+        <div>
+            {{ form.orgHandler.errors }}
         </div>
 
         <div class="flex-row width-90">
@@ -39,10 +59,16 @@
                 </span>
             {% endfor %}
         </div>
+        <div>
+            {{ form.assessmentType.errors }}
+        </div>
 
           <div>
               {{ form.scope.label_tag }}
               {{ form.scope }}
+          </div>
+          <div>
+              {{ form.scope.errors }}
           </div>
 
           <div>
@@ -51,6 +77,9 @@
               Logo
               {{ form.logo }}
             </label>
+          </div>
+          <div>
+              {{ form.logo.errors }}
           </div>
 
             <div id="preview">

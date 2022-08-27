@@ -38,7 +38,7 @@ class Cases(models.Model):
     assessmentType = models.CharField(max_length=100, choices=assessments,
                                       blank=False, default='Unspecified')
     scope = models.TextField()
-    logo = models.ImageField(upload_to=f'Cases/{caseName}/Logos')
+    logo = models.ImageField(upload_to=f'Cases/Logos', max_length=500)
     createDate = models.DateTimeField(auto_now_add=True)
     lastUpdate = models.DateTimeField(auto_now=True)
 
@@ -97,7 +97,7 @@ class Issues(models.Model):
 
 class PoC(models.Model):
     issue = models.ForeignKey(Issues, on_delete=models.CASCADE)
-    image = models.ImageField(blank=True, upload_to=f'Cases/Screenshots', validators=[
+    image = models.ImageField(blank=True, max_length=500, upload_to=f'Cases/Screenshots', validators=[
         FileExtensionValidator(allowed_extensions=['jpg', 'png', 'jfif', 'exif', 'gif', 'tiff', 'bmp'])])
 
     def __str__(self):

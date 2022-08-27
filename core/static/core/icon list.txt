@@ -3,7 +3,7 @@ report
 edit
 arrow_drop_down
 swap_vert
-remove-circle
+remove_circle
 attach_file
 search
 add

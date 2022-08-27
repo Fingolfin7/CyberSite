@@ -18,7 +18,13 @@
         {% csrf_token %}
         <div class="flex-row">
             <span class="left"><h3><u>Analysis</u></h3></span>
-            <span class="flex-row" id="issues-corner-buttons">
+            <span class="flex-row width-20" id="issues-corner-buttons">
+                <a class="plain-link" href="{% url 'generateReport' issues.0.case.id %}">
+                    <button type="button" class="blue-grey button no-border">
+                        <i class="material-icons">download</i>
+                        Report
+                    </button>
+                </a>
                 <button type="button" class="blue-grey button no-border" name="stats" id="view_stats">
                     <i class="material-icons">insert_chart</i>
                     Stats
@@ -35,13 +41,9 @@
         </div>
 
         {% if is_paginated and page_obj.number == 1 or not is_paginated %}
-            <a class="forestgreen button-link no-border" href="{% url 'issue-create' issues.0.case.id %}">
+            <a class="forestgreen button-link no-border" href="{% url 'issue-create' issues.0.case.id %}" id="add-issue">
                  <i class="material-icons">add</i>
                  Add Issue
-            </a>
-            <a class="button-link no-border blue-grey" href="{% url 'generateReport' issues.0.case.id %}">
-                <i class="material-icons">download</i>
-                Download Report
             </a>
             <span class="flex-row"></span>
         {% endif %}
@@ -49,7 +51,19 @@
         <div id="issues-div">
           {% for issue in issues %}
             <div class="inner-card">
+                {% for error in issue.non_field_errors %}
+                    <div>
+                        {{error}}
+                    </div>
+                {% endfor %}
                 <div class="flex-row">
+                    <span class="left">
+                      <a class="plain-link" href="{% url 'issue-delete' issue.case.id issue.id %}">
+                        <button type="button" class="button  no-border">
+                            <i class="material-icons">remove_circle</i>
+                        </button>
+                      </a>
+                    </span>
                     <span class="left width-90">
                       {{ issue.name }}
                     </span>
@@ -67,9 +81,11 @@
             <div class="inner-card">
                 <div class="flex-row">
                     {% if page_obj.has_previous %}
-                        <a href="?page=1" class="plain-link no-border button forestgreen width-10">First</a>
+                        <a href="?page=1" class="plain-link no-border button width-10">
+                            <i class="material-icons md-18 no-padding">first_page</i>
+                        </a>
                         <a href="?page={{ page_obj.previous_page_number }}" class="plain-link no-border button width-10">
-                            <i class="material-icons md-18 no-padding">arrow_back</i>
+                            <i class="material-icons md-18 no-padding">navigate_before</i>
                         </a>
                     {% endif %}
 
@@ -83,9 +99,11 @@
 
                     {% if page_obj.has_next %}
                         <a href="?page={{ page_obj.next_page_number }}" class="plain-link no-border button width-10">
-                            <i class="material-icons md-18 no-padding">arrow_forward</i>
+                            <i class="material-icons md-18 no-padding">navigate_next</i>
                         </a>
-                        <a href="?page={{ page_obj.paginator.num_pages }}" class="plain-link no-border button forestgreen width-10">Last</a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}" class="plain-link no-border button width-10">
+                            <i class="material-icons md-18 no-padding">last_page</i>
+                        </a>
                     {% endif %}
                 </div>
             </div>

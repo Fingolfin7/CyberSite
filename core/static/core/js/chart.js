@@ -1,7 +1,8 @@
 $(document).ready(function(){
-    $("#chart").hide();
 
-    drawChart();
+    drawChart(); //make sure to draw the chart before you hide the #chart canvas
+
+    $("#chart").hide();
 
     $("#view_stats").click(function(){
         $("#chart").toggle("slow");
