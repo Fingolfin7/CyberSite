@@ -35,11 +35,9 @@
                         <th>
                             Last Update
                         </th>
-                        <th>
-                            <button class="button no-border">
-                                <i class="material-icons">settings</i>
-                            </button>
-                        </th>
+                        <!--<th>
+                            Go To
+                        </th>-->
                     </tr>
                     {% if cases %}
                         {% for case in cases%}
@@ -60,11 +58,16 @@
                                 </td>
                                 <td>{{ case.createDate|date:"F d, H:i" }}</td>
                                 <td>{{ case.lastUpdate|date:"F d, H:i" }}</td>
-                                <td>
-                                    <button class="button no-border">
-                                        <i class="material-icons">more_vert</i>
-                                    </button>
-                                </td>
+                                <!--<td>
+                                    <select class="select-field" onchange="location = this.value;">
+                                        <option value="{% url 'recon' case.id %}">
+                                            Recon
+                                        </option>
+                                        <option value="{% url 'analysis' case.id %}">
+                                                Analysis
+                                        </option>
+                                    </select>
+                                </td> -->
                             </tr>
                         {% endfor %}
                     {% else %}
