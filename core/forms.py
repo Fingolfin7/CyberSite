@@ -64,7 +64,7 @@ class IssueForm(forms.ModelForm):
                    'reference': forms.Textarea(attrs={'class': 't-area issueReference', 'rows': '1',
                                                       'placeholder': 'Reference'}),
                    'cvss_rating': forms.NumberInput(attrs={'class': 'input-field issueRating', 'min': 0.0, 'max': 10.0,
-                                                           'step': 1.0, 'placeholder': "CVSS"})
+                                                           'step': 0.1, 'placeholder': "CVSS"})
                    }
 
         labels = {k: "" for k in fields}

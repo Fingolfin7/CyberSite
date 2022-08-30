@@ -34,7 +34,7 @@ class CaseListView(ListView):
     template_name = 'core/home.html'
     context_object_name = 'cases'
     ordering = ['-lastUpdate']
-    paginate_by = 7
+    paginate_by = 5
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -68,12 +68,13 @@ class CaseDeleteView(LoginRequiredMixin, DeleteView):
     model = Cases
     context_object_name = 'case'
     template_name = 'core/delete_case.html'
-    success_url = '/'
+    #success_url = '/'
     success_message = 'Case Deleted'
 
     def delete(self, request, *args, **kwargs):
         messages.warning(self.request, self.success_message)
         return super(CaseDeleteView, self).delete(request, *args, **kwargs)
+
 
 def get_recon_tools(request, pk: int):
     recon_tools = json.loads(Cases.objects.get(id=pk).recon.tools)
@@ -91,6 +92,8 @@ def recon(request, pk: int):
 
         if recon_form.is_valid():
             recon_form.save()
+            if recon_form.has_changed():
+                reconInstance.case.save()  # update last saved date for case by saving the case
             return redirect('analysis', pk)
         else:
             for field in ['tools', 'passive_sources']:
@@ -140,6 +143,7 @@ class IssueListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = "Analysis"
+        context['case_id'] = self.kwargs['pk']
         return context
 
 
@@ -150,9 +154,11 @@ class IssueCreateView(LoginRequiredMixin, CreateView):
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST, request.FILES)
-        form.instance.case = Cases.objects.get(id=self.kwargs['case_pk'])
+        case = Cases.objects.get(id=self.kwargs['case_pk'])
+        form.instance.case = case
         if form.is_valid():
             issueInstance = form.save()
+            case.save()  # update last saved date for case by saving the case
             poc_images = POCFormSet(self.request.POST, self.request.FILES)
             if poc_images.is_valid():
                 poc_images.instance = issueInstance
@@ -160,6 +166,8 @@ class IssueCreateView(LoginRequiredMixin, CreateView):
                 return HttpResponseRedirect(self.get_success_url())
             else:
                 return self.form_invalid(form)
+        else:
+            return self.form_invalid(form)
 
     def get_success_url(self):
         return reverse('analysis', kwargs={'pk': self.kwargs['case_pk']})
@@ -179,7 +187,9 @@ class IssueUpdateView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         context = self.get_context_data()
-        form.instance.case = Cases.objects.get(id=self.kwargs['case_pk'])
+        case = Cases.objects.get(id=self.kwargs['case_pk'])
+        form.instance.case = case
+        case.save()  # update last saved date for case by saving the case
         poc_images = context['poc_images']
 
         if poc_images.is_valid():
@@ -210,6 +220,7 @@ class IssueDeleteView(LoginRequiredMixin,DeleteView):
 
     def delete(self, request, *args, **kwargs):
         messages.warning(self.request, self.success_message)
+        Cases.objects.get(id=self.kwargs['case_pk']).save()  # update last saved date for case by saving the case
         return super(IssueDeleteView, self).delete(request, *args, **kwargs)
 
     def get_success_url(self):

@@ -97,7 +97,7 @@
                 <div class="inner-card">
                     <div class="flex-row">
                         {% if page_obj.has_previous %}
-                            <a href="?page=1" class="plain-link no-border button forestgreen width-10">
+                            <a href="?page=1" class="plain-link no-border button width-10">
                                 <i class="material-icons md-18 no-padding">first_page</i>
                             </a>
                             <a href="?page={{ page_obj.previous_page_number }}" class="plain-link no-border button width-10">
@@ -117,7 +117,7 @@
                             <a href="?page={{ page_obj.next_page_number }}" class="plain-link no-border button width-10">
                                 <i class="material-icons md-18 no-padding">navigate_next</i>
                             </a>
-                            <a href="?page={{ page_obj.paginator.num_pages }}" class="plain-link no-border button forestgreen width-10">
+                            <a href="?page={{ page_obj.paginator.num_pages }}" class="plain-link no-border button width-10">
                                 <i class="material-icons md-18 no-padding">last_page</i>
                             </a>
                         {% endif %}

@@ -19,7 +19,7 @@
         <div class="flex-row">
             <span class="left"><h3><u>Analysis</u></h3></span>
             <span class="flex-row width-20" id="issues-corner-buttons">
-                <a class="plain-link" href="{% url 'generateReport' issues.0.case.id %}">
+                <a class="plain-link" href="{% url 'generateReport' case_id %}">
                     <button type="button" class="blue-grey button no-border">
                         <i class="material-icons">download</i>
                         Report
@@ -41,7 +41,7 @@
         </div>
 
         {% if is_paginated and page_obj.number == 1 or not is_paginated %}
-            <a class="forestgreen button-link no-border" href="{% url 'issue-create' issues.0.case.id %}" id="add-issue">
+            <a class="forestgreen button-link no-border" href="{% url 'issue-create' case_id %}" id="add-issue">
                  <i class="material-icons">add</i>
                  Add Issue
             </a>
@@ -110,7 +110,7 @@
         {% endif %}
 
         <div class="button-row">
-          <a href="{% url 'recon' issues.0.case.id %}" class="button-link" id="back">
+          <a href="{% url 'recon' case_id %}" class="button-link" id="back">
             <i class="material-icons md-18 no-padding">arrow_back</i>
             Back
           </a>
