@@ -292,7 +292,7 @@ def generateReport(request, pk: int):
         ],
         'issues_count': len(case.issues_set.all())
     }
-    print(context['issues'][2]['poc_list'])
+
     doc.render(context)
     doc.save(tmp.name)
     stream_file = open(tmp.name, 'rb')
