@@ -135,6 +135,7 @@ GitHub.sublime-settings
 !.vscode/launch.json 
 !.vscode/extensions.json 
 .history
-db.sqlite3
+
+# everything else
 /media/Cases/
 /media/profile_pics/
