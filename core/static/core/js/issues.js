@@ -43,9 +43,9 @@ $(document).ready(function(){
         //set form values
         container.find('.issueName').val(formData['title']);
         container.find('.issueSeverity').val(formData['severity']);
-        container.find('.issueDescription').val(formData['desc']);
-        container.find('.issueReference').val(formData['ref']);
-        container.find('.issueRating').val(formData['cvss']);
+        container.find('.issueDescription').val(formData['description']);
+        container.find('.issueReference').val(formData['reference']);
+        container.find('.issueRating').val(formData['cvss_rating']);
     }
     else{
         container.find('.issueName').val($('#issue-title').val());

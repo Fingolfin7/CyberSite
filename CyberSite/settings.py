@@ -33,6 +33,7 @@ ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     'core.apps.CoreConfig',
+    'vulnerabilities.apps.VulnerabilitiesConfig',
     'users.apps.UsersConfig',
     'crispy_forms',
     'django.contrib.admin',

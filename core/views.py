@@ -7,6 +7,7 @@ from docxtpl import DocxTemplate, InlineImage
 from django.contrib import messages
 from django.http import JsonResponse, FileResponse
 from .models import Cases, Issues, PoC
+from vulnerabilities.models import *
 from .forms import CaseForm, ReconForm, IssueForm, POCFormSet
 from django.urls import reverse
 from django.shortcuts import render, redirect, HttpResponseRedirect
@@ -18,14 +19,18 @@ from cleantext import clean
 
 def search_vulns(request):
     search_val = request.GET.get('search_val', None)
-    vuln_source = request.GET.get('vuln_source', None)
+    vuln_source = int(request.GET.get('vuln_source', None))
 
-    with open(f'core/static/core/vulnerabilities/{vuln_source}', 'r', encoding='latin1') as reader:
-        vulnerabilities = json.loads(reader.read())
+    vulnList = [VulnerabilitiesGeneral, VulnerabilitiesCWE, VulnerabilitiesOWASP,
+                VulnerabilitiesMobile, VulnerabilitiesEnterprise]
+
+    vulnerabilities = vulnList[vuln_source].objects.filter(title__contains=search_val.lower()).values()
+    vulnerabilities = list(vulnerabilities)
+
     data = {
-        'results': [i for i in vulnerabilities if
-                    search_val.lower() in i['title'].lower() and search_val != ""]
+        'results': vulnerabilities
     }
+
     return JsonResponse(data)
 
 
@@ -68,7 +73,7 @@ class CaseDeleteView(LoginRequiredMixin, DeleteView):
     model = Cases
     context_object_name = 'case'
     template_name = 'core/delete_case.html'
-    #success_url = '/'
+    # success_url = '/'
     success_message = 'Case Deleted'
 
     def delete(self, request, *args, **kwargs):
@@ -212,7 +217,7 @@ class IssueUpdateView(LoginRequiredMixin, UpdateView):
         return context
 
 
-class IssueDeleteView(LoginRequiredMixin,DeleteView):
+class IssueDeleteView(LoginRequiredMixin, DeleteView):
     model = Issues
     template_name = "core/delete_issue.html"
     context_object_name = "issue"
@@ -241,7 +246,7 @@ def Issues(request, *args, **kwargs):
             return redirect('analysis', kwargs['case_pk'])
         else:
             messages.error(request, f"Form: {form.errors}" if form.errors else
-                                    f"POC: {poc.errors}")
+            f"POC: {poc.errors}")
 
     else:
         form = IssueForm(instance=issueInstance)

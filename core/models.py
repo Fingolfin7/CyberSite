@@ -105,3 +105,5 @@ class PoC(models.Model):
 
     class Meta:
         verbose_name_plural = "Issue Proof of Concepts"
+
+
