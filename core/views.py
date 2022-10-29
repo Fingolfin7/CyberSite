@@ -1,20 +1,22 @@
-from datetime import datetime
 import json
 import tempfile
-from django.db import transaction
+
+from django.core.files.storage import FileSystemStorage
 from docx.shared import Cm
-from docxtpl import DocxTemplate, InlineImage
-from django.contrib import messages
-from django.http import JsonResponse, FileResponse
-from .models import Cases, Issues, PoC
-from vulnerabilities.models import *
-from .forms import CaseForm, ReconForm, IssueForm, POCFormSet
-from django.urls import reverse
-from django.shortcuts import render, redirect, HttpResponseRedirect
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from cleantext import clean
+from datetime import datetime
+from .importer.importer import import_rapid_seven
+from django.urls import reverse
+from .models import Cases, Issues
+from django.contrib import messages
+from vulnerabilities.models import *
+from docxtpl import DocxTemplate, InlineImage
+from django.http import JsonResponse, FileResponse
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render, redirect, HttpResponseRedirect
+from .forms import CaseForm, ReconForm, IssueForm, POCFormSet, UploadReport
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 
 def search_vulns(request):
@@ -302,3 +304,47 @@ def generateReport(request, pk: int):
     doc.save(tmp.name)
     stream_file = open(tmp.name, 'rb')
     return FileResponse(stream_file, as_attachment=True, filename=f'{case.caseName} Report.docx')
+
+
+def importReport(request, pk: int):
+    case = Cases.objects.get(id=pk)
+
+    if request.method == "POST":
+        form = UploadReport(request.POST, request.FILES)
+        fs = FileSystemStorage()
+
+        if form.is_valid():
+            file = form.cleaned_data.get('file')
+            filename = fs.save(file.name, file)
+
+            file_path = fs.path(filename)
+            success, import_count, mssge = import_rapid_seven(file_path, case)
+
+            fs.delete(filename)
+
+            if not success:
+                return
+
+            '''for key in data.keys():
+                obj = data[key]
+                newVuln = VulnerabilitiesImported(title=key, description=obj['Detail'],
+                                                  solution=obj['Solution'], references=obj['References'],
+                                                  severity=obj['Severity'])
+                newVuln.save()
+                issue = Issues(case=case, name=key, severity=obj['Severity'], affected_hosts=obj['Hosts'],
+                               description=obj['Detail'], solution=obj['Solution'], references=obj['References'])
+                issue.save()'''
+
+            if success:
+                messages.success(request, f'Imported {import_count} New Issues')
+            else:
+                messages.error(request, f'Import failed. {mssge}. Please try again.')
+    else:
+        form = UploadReport()
+
+    context = {
+        "title": "Import Report",
+        "form": form,
+        "case": case
+    }
+    return render(request, 'core/import_report.html', context)

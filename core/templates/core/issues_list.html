@@ -18,7 +18,7 @@
         {% csrf_token %}
         <div class="flex-row">
             <span class="left"><h3><u>Analysis</u></h3></span>
-            <span class="flex-row width-20" id="issues-corner-buttons">
+            <span class="flex-row width-30" id="issues-corner-buttons">
                 <a class="plain-link" href="{% url 'generateReport' case_id %}">
                     <button type="button" class="blue-grey button no-border">
                         <i class="material-icons">download</i>
@@ -29,6 +29,12 @@
                     <i class="material-icons">insert_chart</i>
                     Stats
                 </button>
+                <a class="plain-link" href="{% url 'import_report' case_id %}">
+                    <button type="button" class="blue-grey button no-border">
+                        <i class="material-icons">cloud</i>
+                        Import
+                    </button>
+                </a>
             </span>
         </div>
         <div class='inner-card' id="chart">
@@ -41,9 +47,11 @@
         </div>
 
         {% if is_paginated and page_obj.number == 1 or not is_paginated %}
-            <a class="forestgreen button-link no-border" href="{% url 'issue-create' case_id %}" id="add-issue">
-                 <i class="material-icons">add</i>
-                 Add Issue
+            <a class="plain-link" href="{% url 'issue-create' case_id %}" id="add-issue">
+               <button type="button" class="forestgreen button no-border width-100">
+                   <i class="material-icons">add</i>
+                    Add Issue
+               </button>
             </a>
             <span class="flex-row"></span>
         {% endif %}

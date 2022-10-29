@@ -1,3 +1,13 @@
+:root {
+  --ribbon: rgba(255, 255, 255, 0.8);
+  --background: whitesmoke;
+  --card: white;
+  --button: forestgreen;
+  --button-border: forestgreen;
+  --button-fill: forestgreen;
+  --link: forestgreen;
+}
+
 *{
   box-sizing: border-box;
   line-height: 2;
@@ -12,13 +22,13 @@ body{
   padding: 0;
   font-size: 16px;
   font-family: "Open Sans", serif;
-  background: url("../images/circuits-4.jpg");
+  /*background: url("../images/circuits-4.jpg");
   background-size: auto;
-  background-blend-mode: overlay;
+  background-blend-mode: overlay;*/
   /*background: url("../images/cloud-computing.webp") center center no-repeat;
   background-size: cover;
   background-color: whitesmoke;*/
-  background-color: rgba(245,245,245, 0.8);
+  background-color: var(--background);
 }
 
 /* ribbon */
@@ -29,7 +39,7 @@ body{
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: var(--ribbon);
 }
 
 .ribbon-logo{
@@ -51,7 +61,7 @@ body{
 
 .card, .inner-card{
   width: 90%;
-  background-color: white;
+  background-color: var(--card);
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.35);
   border-radius: 5px;
   margin-bottom: 2rem;
@@ -113,6 +123,17 @@ body{
   width: 25%;
 }
 
+.width-30{
+  width: 30%;
+}
+
+.width-35{
+  width: 35%;
+}
+.width-40{
+  width: 40%;
+}
+
 .width-45{
   width: 45%;
 }
@@ -169,7 +190,7 @@ body{
 .round-upload{
   width: auto;
   border-radius: 100%;
-  background: forestgreen;
+  background: var(--button-fill);
   color: white;
 }
 
@@ -235,7 +256,7 @@ select:invalid{
   border-radius: 0;
   border-style: none;
   border-top-style: solid;
-  border-color: forestgreen;
+  border-color: var(--button-border);
   text-align: center;
   padding: 0 1rem 0 1rem;
   font-family: inherit;
@@ -248,7 +269,7 @@ select:invalid{
 }
 
 .plain-link{
-  color: forestgreen;
+  color: var(--link);
 }
 
 .button:hover{
@@ -321,7 +342,7 @@ button > .material-icons {
 .popup-content{
   width: 80%;
   /*background-color: rgb(40, 40, 40);*/
-  background-color: whitesmoke;
+  background-color: var(--background);
   margin: 15% auto;
   padding: 2rem;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.35);

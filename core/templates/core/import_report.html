@@ -1,0 +1,36 @@
+{% extends 'core/base.html'%}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+  <form class="card form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!--<div>
+            {{ form.type }}
+            {{ form.type.errors }}
+        </div>-->
+         <div>
+            <label for="{{ form.file.id_for_label }}" class="custom-file-upload">
+              <i class="material-icons">cloud_upload</i>
+              Report
+              {{ form.file }}
+            </label>
+          </div>
+          <div>
+              {{ form.file.errors }}
+          </div>
+
+        <div>
+          <a href="{% url 'analysis' case.id %}" class="plain-link" id="back">
+            <button type="button" class="blue-grey button no-border">
+                <i class="material-icons md-18 no-padding">arrow_back</i>
+                Back
+            </button>
+          </a>
+          <button type="submit" class="forestgreen button no-border" id="next">
+            <i class="material-icons md-18 no-padding">send</i>
+            Import
+          </button>
+        </div>
+      </form>
+{% endblock %}

@@ -37,5 +37,7 @@ class VulnerabilitiesOWASP(VulnerabilitiesGeneral):
 
 
 class VulnerabilitiesImported(VulnerabilitiesGeneral):
+    solution = models.TextField(blank=True)
+
     class Meta:
         verbose_name_plural = "Imported"

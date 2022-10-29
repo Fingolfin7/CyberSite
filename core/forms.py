@@ -84,3 +84,8 @@ class PoCForm(forms.ModelForm):
 
 
 POCFormSet = inlineformset_factory(Issues, PoC, form=PoCForm, extra=1, can_delete=True)
+
+
+class UploadReport(forms.Form):
+    # type = forms.CharField(max_length=100, choices=[("Nessus", "Nessus"), ("Rapid7", "Rapid7")])
+    file = forms.FileField(widget=forms.FileInput(attrs={'accept': '.csv'}))

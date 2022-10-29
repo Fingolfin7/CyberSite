@@ -1,4 +1,8 @@
 /* tables */
+:root {
+  --th-fill: rgba(71, 135, 120, 0.2);
+  --table-border: #999;
+}
 
 table{
   width: 100%;
@@ -8,21 +12,21 @@ table{
 }
 
 th, td{
-  border-bottom: 1px solid #999;
+  border-bottom: 1px solid var(--table-border);
   padding: 0.25rem;
 }
 
 td.full-borders{
-  border: thin solid #999;
+  border: thin solid var(--table-border);
 }
 
 th.full-borders{
-  border: thin solid forestgreen;
+  border: thin solid var(--button-border);
 }
 
 th{
-  background-color: rgba(71, 135, 120, 0.2);
-  border-color: forestgreen;
+  background-color: var(--th-fill);
+  border-color: var(--button-border);
   text-align: left;
 }
 
