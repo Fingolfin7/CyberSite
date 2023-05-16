@@ -1,6 +1,6 @@
+import os
 import json
 import tempfile
-
 from django.core.files.storage import FileSystemStorage
 from docx.shared import Cm
 from cleantext import clean
@@ -285,16 +285,16 @@ def generateReport(request, pk: int):
         },
         'issues': [
             {
-                'name': clean(issue.name, fix_unicode=True, to_ascii=True, lower=False),
-                'severity': clean(issue.severity, fix_unicode=True, to_ascii=True, lower=False),
-                'affected_hosts': clean(issue.affected_hosts, fix_unicode=True, to_ascii=True, lower=False),
-                'description': clean(issue.description, fix_unicode=True, to_ascii=True, lower=False),
-                'impact': clean(issue.impact, fix_unicode=True, to_ascii=True, lower=False),
-                'solution': clean(issue.solution, fix_unicode=True, to_ascii=True, lower=False),
-                'reference': issue.reference,
-                'cvss_rating': issue.cvss_rating,
+                'name': clean(issue.name) if issue.name else '',
+                'severity': clean(issue.severity) if issue.severity else '',
+                'affected_hosts': clean(issue.affected_hosts) if issue.affected_hosts else '',
+                'description': clean(issue.description) if issue.description else '',
+                'impact': clean(issue.impact) if issue.impact else '',
+                'solution': clean(issue.solution) if issue.solution else '',
+                'reference': issue.reference if issue.reference else '',
+                'cvss_rating': issue.cvss_rating if issue.cvss_rating else '',
                 'poc_list': [InlineImage(doc, image_descriptor=poc.image, width=Cm(10))
-                             for poc in issue.poc_set.all()],
+                             for poc in issue.poc_set.all() if os.path.exists(poc.image.path)],
             } for issue in case.issues_set.all()
         ],
         'issues_count': len(case.issues_set.all())

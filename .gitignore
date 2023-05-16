@@ -139,3 +139,5 @@ GitHub.sublime-settings
 # everything else
 /media/Cases/
 /media/profile_pics/
+.idea/
+*.sqlite3
