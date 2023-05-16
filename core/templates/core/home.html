@@ -56,8 +56,8 @@
                                         {{ case.caseName }}
                                     </a>
                                 </td>
-                                <td>{{ case.createDate|date:"F d, H:i" }}</td>
-                                <td>{{ case.lastUpdate|date:"F d, H:i" }}</td>
+                                <td>{{ case.createDate|date:"F d Y, H:i" }}</td>
+                                <td>{{ case.lastUpdate|date:"F d Y, H:i" }}</td>
                                 <!--<td>
                                     <select class="select-field" onchange="location = this.value;">
                                         <option value="{% url 'recon' case.id %}">

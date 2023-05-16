@@ -285,12 +285,12 @@ def generateReport(request, pk: int):
         },
         'issues': [
             {
-                'name': clean(issue.name) if issue.name else '',
-                'severity': clean(issue.severity) if issue.severity else '',
-                'affected_hosts': clean(issue.affected_hosts) if issue.affected_hosts else '',
-                'description': clean(issue.description) if issue.description else '',
-                'impact': clean(issue.impact) if issue.impact else '',
-                'solution': clean(issue.solution) if issue.solution else '',
+                'name': issue.name if issue.name else '',
+                'severity': issue.severity if issue.severity else '',
+                'affected_hosts': issue.affected_hosts if issue.affected_hosts else '',
+                'description': issue.description if issue.description else '',
+                'impact': issue.impact if issue.impact else '',
+                'solution': issue.solution if issue.solution else '',
                 'reference': issue.reference if issue.reference else '',
                 'cvss_rating': issue.cvss_rating if issue.cvss_rating else '',
                 'poc_list': [InlineImage(doc, image_descriptor=poc.image, width=Cm(10))
