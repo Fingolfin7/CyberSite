@@ -54,9 +54,9 @@ def import_rapid_seven(file: str, case):
                 # https://stackoverflow.com/questions/1941212/correct-way-to-use-get-or-create
                 # https://stackoverflow.com/questions/1821176/django-check-whether-an-object-already-exists-before-adding
                 dbObj, _ = VulnerabilitiesImported.objects.get_or_create(title=key, description=dta['Detail'],
-                                                                           solution=dta['Solution'],
-                                                                           reference=dta['References'],
-                                                                           severity=data['Severity'])
+                                                                         solution=dta['Solution'],
+                                                                         reference=dta['References'],
+                                                                         severity=data['Severity'])
             else:
                 dbObj = VulnerabilitiesImported.objects.filter(title=key).first()
 
@@ -68,7 +68,7 @@ def import_rapid_seven(file: str, case):
             if created:
                 count += 1
     except Exception as e:
-        message = e.to_strinh()
+        message = str(e)
         success = False
 
     return success, count, message
